@@ -33,6 +33,9 @@
 		D57B0A0D1ED1C8F800F25EBE /* ChangeVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D57B0A0C1ED1C8F800F25EBE /* ChangeVC.m */; };
 		D57B0A131ED2F52800F25EBE /* BerryQiNiuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D57B0A121ED2F52800F25EBE /* BerryQiNiuModel.m */; };
 		D57B0A171ED5B95F00F25EBE /* TimelineDetailVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D57B0A161ED5B95F00F25EBE /* TimelineDetailVC.m */; };
+		D5838C6B1ED80E12006C033C /* TopView.m in Sources */ = {isa = PBXBuildFile; fileRef = D5838C6A1ED80E12006C033C /* TopView.m */; };
+		D5838C6E1ED80E25006C033C /* PersonalTopView.m in Sources */ = {isa = PBXBuildFile; fileRef = D5838C6D1ED80E25006C033C /* PersonalTopView.m */; };
+		D5838C711ED80FA0006C033C /* UserMainPageVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D5838C701ED80FA0006C033C /* UserMainPageVC.m */; };
 		D5D0520A1EBC370200981048 /* PcircleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D5D052091EBC370200981048 /* PcircleVC.m */; };
 		D5D0520D1EBC3B2500981048 /* PersonalVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D5D0520C1EBC3B2500981048 /* PersonalVC.m */; };
 		D5D052111ECADDE200981048 /* CircleVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D5D052101ECADDE200981048 /* CircleVC.m */; };
@@ -215,6 +218,12 @@
 		D57B0A121ED2F52800F25EBE /* BerryQiNiuModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BerryQiNiuModel.m; sourceTree = "<group>"; };
 		D57B0A151ED5B95F00F25EBE /* TimelineDetailVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineDetailVC.h; sourceTree = "<group>"; };
 		D57B0A161ED5B95F00F25EBE /* TimelineDetailVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimelineDetailVC.m; sourceTree = "<group>"; };
+		D5838C691ED80E12006C033C /* TopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopView.h; sourceTree = "<group>"; };
+		D5838C6A1ED80E12006C033C /* TopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopView.m; sourceTree = "<group>"; };
+		D5838C6C1ED80E25006C033C /* PersonalTopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonalTopView.h; sourceTree = "<group>"; };
+		D5838C6D1ED80E25006C033C /* PersonalTopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PersonalTopView.m; sourceTree = "<group>"; };
+		D5838C6F1ED80FA0006C033C /* UserMainPageVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserMainPageVC.h; sourceTree = "<group>"; };
+		D5838C701ED80FA0006C033C /* UserMainPageVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserMainPageVC.m; sourceTree = "<group>"; };
 		D5D052081EBC370200981048 /* PcircleVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcircleVC.h; sourceTree = "<group>"; };
 		D5D052091EBC370200981048 /* PcircleVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PcircleVC.m; sourceTree = "<group>"; };
 		D5D0520B1EBC3B2500981048 /* PersonalVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonalVC.h; sourceTree = "<group>"; };
@@ -566,6 +575,35 @@
 			name = TimelineDetail;
 			sourceTree = "<group>";
 		};
+		D5838C661ED80B73006C033C /* UserMainPage */ = {
+			isa = PBXGroup;
+			children = (
+				D5838C681ED80E06006C033C /* V */,
+				D5838C671ED80B92006C033C /* C */,
+			);
+			name = UserMainPage;
+			sourceTree = "<group>";
+		};
+		D5838C671ED80B92006C033C /* C */ = {
+			isa = PBXGroup;
+			children = (
+				D5838C6F1ED80FA0006C033C /* UserMainPageVC.h */,
+				D5838C701ED80FA0006C033C /* UserMainPageVC.m */,
+			);
+			name = C;
+			sourceTree = "<group>";
+		};
+		D5838C681ED80E06006C033C /* V */ = {
+			isa = PBXGroup;
+			children = (
+				D5838C691ED80E12006C033C /* TopView.h */,
+				D5838C6A1ED80E12006C033C /* TopView.m */,
+				D5838C6C1ED80E25006C033C /* PersonalTopView.h */,
+				D5838C6D1ED80E25006C033C /* PersonalTopView.m */,
+			);
+			name = V;
+			sourceTree = "<group>";
+		};
 		D5D052001EBC367800981048 /* Img */ = {
 			isa = PBXGroup;
 			children = (
@@ -587,6 +625,7 @@
 		D5D052021EBC369F00981048 /* Me */ = {
 			isa = PBXGroup;
 			children = (
+				D5838C661ED80B73006C033C /* UserMainPage */,
 				D57B0A0E1ED2C04600F25EBE /* Mine */,
 				D57B09CC1ED02DD600F25EBE /* Followers */,
 			);
@@ -1233,7 +1272,9 @@
 				D5D052E51ECB10CA00981048 /* YHUserSetting.m in Sources */,
 				D53F18CC1ED6AE290041E05F /* CommentView.m in Sources */,
 				D5D052D81ECB10BF00981048 /* YHWorkGroupPhotoContainer.m in Sources */,
+				D5838C6E1ED80E25006C033C /* PersonalTopView.m in Sources */,
 				D57B09FD1ED17F1000F25EBE /* NSObject+MJProperty.m in Sources */,
+				D5838C711ED80FA0006C033C /* UserMainPageVC.m in Sources */,
 				D57B09D11ED02E1200F25EBE /* FollowersVC.m in Sources */,
 				D57B09FE1ED17F1000F25EBE /* NSString+MJExtension.m in Sources */,
 				D57B09F41ED17F1000F25EBE /* MJDictionaryCache.m in Sources */,
@@ -1288,6 +1329,7 @@
 				D5D0536A1ECC28A400981048 /* HXVideoPresentTransition.m in Sources */,
 				D53F18D31ED6C5870041E05F /* CommentCell.m in Sources */,
 				D57B09FB1ED17F1000F25EBE /* NSObject+MJCoding.m in Sources */,
+				D5838C6B1ED80E12006C033C /* TopView.m in Sources */,
 				D5D052E61ECB10CA00981048 /* YHWorkExperienceModel.m in Sources */,
 				D5D95B081EAB1D5200E32672 /* ScrollView.m in Sources */,
 				D5D0535C1ECC28A400981048 /* HXCameraViewController.m in Sources */,

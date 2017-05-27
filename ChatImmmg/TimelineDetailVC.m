@@ -14,6 +14,8 @@
 #import "YHSharePresentView.h"
 #import "UITableViewCell+HYBMasonryAutoCellHeight.h"
 #import "CommentView.h"
+#import "CommentCell.h"
+#import "TimelineCommentModel.h"
 
 @interface TimelineDetailVC ()<UITableViewDelegate,UITableViewDataSource,CellForWorkGroupDelegate,UITextViewDelegate>
 
@@ -22,6 +24,10 @@
 
 @property (nonatomic,strong) CommentView *commentView;
 @property (nonatomic , strong)UITapGestureRecognizer *gesture;
+
+@property (nonatomic,strong) NSMutableArray<NSString *> *commentCellheights;
+
+//@property(nonatomic,strong) NSMutableArray<TimelineCommentModel *> *comments;
 
 @end
 
@@ -39,6 +45,8 @@
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+    [self calcCommentCellHeights];
+    [self getDetailTimeline];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -83,19 +91,20 @@
     self.navigationController.navigationBar.titleTextAttributes = attributes;
     
     
-    self.tableView = [[YHRefreshTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.tableView = [[YHRefreshTableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64) style:UITableViewStylePlain];
     self.tableView.delegate   = self;
     self.tableView.dataSource = self;
     self.tableView.backgroundColor = RGBCOLOR(244, 244, 244);
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:self.tableView];
     
-    [self.tableView setEnableLoadNew:YES];
+//    [self.tableView setEnableLoadNew:YES];
     [self.tableView setEnableLoadMore:YES];
     
     self.view.backgroundColor = RGBCOLOR(244, 244, 244);
     
     [self.tableView registerClass:[CellForWorkGroup class] forCellReuseIdentifier:NSStringFromClass([CellForWorkGroup class])];
+    [self.tableView registerClass:[CommentCell class] forCellReuseIdentifier:NSStringFromClass([CommentCell class])];
     
     CommentView *commentView = [CommentView new];
     [self.view addSubview:commentView];
@@ -107,29 +116,57 @@
     self.commentView.textView.delegate = self;
 
 }
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if(section == 1){
+        return 40;
+    }else{
+        return 0;
+    }
 
+}
+
+-(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    
+    if(section == 1){
+        return [NSString stringWithFormat:@"评论数：%lu",(unsigned long)self.model.comments.count];
+    }else{
+        return nil;
+    }
+}
 #pragma mark - UITableViewDataSource
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 2;
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 1;
+    if(section == 0){
+        return 1;
+    }else{
+        return self.model.comments.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-
-    CellForWorkGroup *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([CellForWorkGroup class])];
-    if (!cell) {
-        cell = [[CellForWorkGroup alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CellForWorkGroup class])];
+    if(indexPath.section == 0){
+        CellForWorkGroup *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([CellForWorkGroup class])];
+        if (!cell) {
+            cell = [[CellForWorkGroup alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CellForWorkGroup class])];
+        }
+        cell.indexPath = indexPath;
+        cell.model = self.model;
+        cell.delegate = self;
+        cell.viewBottom.hidden = YES;
+        return cell;
+    }else{
+        CommentCell *cell = [[CommentCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CommentCell class])];
+        [cell configModel:self.model.comments[indexPath.row]];
+        return cell;
     }
-    cell.indexPath = indexPath;
-    cell.model = self.model;
-    cell.delegate = self;
-    cell.viewBottom.hidden = YES;
-    return cell;
 }
 
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-        
+    if(indexPath.section == 0){
         CGFloat height = 0.0;
         //取缓存高度
         NSDictionary *dict =  self.heightDict[self.model.dynamicId];
@@ -140,7 +177,7 @@
                 height = [dict[@"normal"] floatValue];
             }
             if (height) {
-                return height;
+                return height - 44;
             }
         }
         
@@ -164,8 +201,12 @@
             }
             [self.heightDict setObject:aDict forKey:self.model.dynamicId];
         }
-        return height;
-    
+        return height - 44;
+    }else{
+
+        return [self.commentCellheights[indexPath.row] floatValue];
+        
+    }
 }
 
 
@@ -349,12 +390,11 @@
         [[NetworkManager shareNetwork]commentTimelineWithParam:params successful:^(NSDictionary *responseObject) {
             NSLog(@"commentTimeline%@",responseObject);
             if([responseObject objectForKey:@"success"]){
-                [self.navigationController popViewControllerAnimated:YES];
                 [SVProgressHUD dismiss];
-                [SVProgressHUD showSuccessWithStatus:@"发布成功！"];
+                [SVProgressHUD showSuccessWithStatus:@"评论成功！"];
             }else{
                 [SVProgressHUD dismiss];
-                [SVProgressHUD showInfoWithStatus:@"发布失败！"];
+                [SVProgressHUD showInfoWithStatus:@"评论失败！"];
             }
             
         } failure:^(NSError *error) {
@@ -367,4 +407,36 @@
         [SVProgressHUD showInfoWithStatus:@"内容不能为空！"];
     }
 }
+
+-(void)calcCommentCellHeights{
+    for(int i = 0;i<self.model.comments.count;i++){
+                NSDictionary *attrs = @{NSFontAttributeName : [UIFont systemFontOfSize:13.0]};
+                CGSize maxSize = CGSizeMake(SCREEN_WIDTH - 25, MAXFLOAT);
+        
+                // 计算文字占据的高度
+                CGSize size = [self.model.comments[i].content boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin attributes:attrs context:nil].size;
+        if(i == 0){
+            self.commentCellheights = [NSMutableArray arrayWithObjects:[NSString stringWithFormat:@"%g",size.height + 75], nil];
+        }else{
+            [self.commentCellheights addObject:[NSString stringWithFormat:@"%g",size.height + 75]];
+        }
+        
+    }
+}
+
+
+-(void)getDetailTimeline{
+    
+    NSString *paramUrl = [@"?timelineID=" stringByAppendingString:self.model.dynamicId];
+    [[NetworkManager shareNetwork]getDetailTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+        NSLog(@"detailTimeline%@",responseObject);
+        self.model = [YHWorkGroup mj_objectWithKeyValues:[responseObject objectForKey:@"result"]];
+        self.commentCellheights = nil;
+        [self calcCommentCellHeights];
+        [self.tableView reloadData];
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
+}
+
 @end

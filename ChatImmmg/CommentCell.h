@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TimelineCommentModel.h"
 
 @interface CommentCell : UITableViewCell
-
+-(void)configModel:(TimelineCommentModel *)model;
 @end

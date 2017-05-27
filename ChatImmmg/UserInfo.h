@@ -14,7 +14,7 @@
 @property(nonatomic,strong)NSString *isDefaultAvatar;
 @property(nonatomic,strong)NSString *nickname;
 @property(nonatomic,strong)NSString *official;
-@property(nonatomic,strong)NSString *avatarURL;
+@property(nonatomic,strong)NSString *avatar;
 
 @property(nonatomic,strong)NSString *_id;
 @property(nonatomic,strong)NSString *__v;

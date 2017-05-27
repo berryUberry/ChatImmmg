@@ -159,6 +159,39 @@ static NetworkManager *shareManager = nil;
 
 }
 
+-(void)getDetailTimelineWithParam:(NSDictionary *)params paramsUrl:(NSString *)paramsUrl successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    
+    NSString *urlString = [param_getDetailTimeline stringByAppendingString:paramsUrl];
+    [NetworkingManager httpRequestWithType:HttpRequestTypeGet WithURLString:urlString parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+
+}
+
+/**
+ 个人主页
+ */
+
+-(void)getPersonalTimelineWithParam:(NSDictionary *)params paramsUrl:(NSString *)paramsUrl successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    NSString *urlString = [param_getPersonalTimeline stringByAppendingString:paramsUrl];
+    [NetworkingManager httpRequestWithType:HttpRequestTypeGet WithURLString:urlString parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+}
+
+-(void)getPersonalInfoWithParam:(NSDictionary *)params paramsUrl:(NSString *)paramsUrl successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    NSString *urlString = [param_getPersonInfo stringByAppendingString:paramsUrl];
+    [NetworkingManager httpRequestWithType:HttpRequestTypeGet WithURLString:urlString parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+}
+
 /**
  BaseHttp
  */

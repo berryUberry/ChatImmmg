@@ -9,5 +9,9 @@
 #import "TimelineCommentModel.h"
 
 @implementation TimelineCommentModel
-
++ (NSDictionary *)mj_objectClassInArray {
+    return @{
+             @"user" : @"UserInfo"
+             };
+}
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "UserInfo.h"
 @interface TimelineCommentModel : NSObject
 
 @property(nonatomic,strong) NSString *__v;
@@ -18,5 +18,6 @@
 @property(nonatomic,strong) NSString *name;
 @property(nonatomic,strong) NSString *publishDate;
 @property(nonatomic,strong) NSString *timelineID;
-
+@property(nonatomic,strong) NSString *avatar;
+@property(nonatomic,strong) UserInfo *user;
 @end

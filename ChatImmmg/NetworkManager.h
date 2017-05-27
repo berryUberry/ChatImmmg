@@ -82,5 +82,20 @@ typedef void (^FailureBlock)(NSError *error);
 -(void)commentTimelineWithParam:(NSDictionary *)params
                      successful:(SuccessBlock)success
                         failure:(FailureBlock)failure;
+-(void)getDetailTimelineWithParam:(NSDictionary *)params
+                        paramsUrl:(NSString *)paramsUrl
+                       successful:(SuccessBlock)success
+                          failure:(FailureBlock)failure;
 
+/**
+ 个人主页
+ */
+-(void)getPersonalTimelineWithParam:(NSDictionary *)params
+                          paramsUrl:(NSString *)paramsUrl
+                         successful:(SuccessBlock)success
+                            failure:(FailureBlock)failure;
+-(void)getPersonalInfoWithParam:(NSDictionary *)params
+                      paramsUrl:(NSString *)paramsUrl
+                     successful:(SuccessBlock)success
+                        failure:(FailureBlock)failure;
 @end

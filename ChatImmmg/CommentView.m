@@ -26,11 +26,11 @@
 - (void)setupView{
 //    self.backgroundColor = [UIColor colorWithHexString:@"#DBDBDB"];
     //    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(10, 14, 30, 20)];
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = [UIColor grayColor];
     UILabel *label = [UILabel new];
     [self addSubview:label];
     label.font = [UIFont systemFontOfSize:13];
-    label.text = @"留言";
+    label.text = @"评论";
     self.label = label;
     
     //    UIView *textFieldView = [[UIView alloc]initWithFrame:CGRectMake(45, 7, 320*V_S_W/375, 33)];

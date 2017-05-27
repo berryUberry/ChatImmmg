@@ -76,8 +76,8 @@
     if (_model != model) {
         _model = model;
         
-        if(model.avatarURL){
-            NSURL *url = [NSURL URLWithString:model.avatarURL];
+        if(model.avatar){
+            NSURL *url = [NSURL URLWithString:model.avatar];
             [_headImg sd_setImageWithURL:url];
         
         }

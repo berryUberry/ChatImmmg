@@ -10,6 +10,7 @@
 #import "HeadCell.h"
 #import "MineBaseCell.h"
 #import "ChangeVC.h"
+#import "UserMainPageVC.h"
 
 static NSString *HeadCellIdentifier = @"HeadCellIdentifier";
 static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
@@ -92,6 +93,12 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
             changeVC.type = @"motto";
             changeVC.text.text = [userdefault objectForKey:@"motto"];
         }
+    }else{
+        if(indexPath.row == 0){
+            UserMainPageVC *usermainpageVC = [UserMainPageVC new];
+            [self presentViewController:usermainpageVC animated:YES completion:nil];
+        }
+        
     }
 
 }
