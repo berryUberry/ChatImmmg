@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface UserMainPageVC : UIViewController
-
+@property(nonatomic,strong) NSString *account;
 @end

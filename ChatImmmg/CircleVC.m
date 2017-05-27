@@ -16,6 +16,7 @@
 #import "UITableViewCell+HYBMasonryAutoCellHeight.h"
 #import "AddTimelineVC.h"
 #import "TimelineDetailVC.h"
+#import "UserMainPageVC.h"
 
 @interface CircleVC ()<UITableViewDelegate,UITableViewDataSource,CellForWorkGroupDelegate>
 {
@@ -379,7 +380,9 @@
 
 #pragma mark - CellForWorkGroupDelegate
 - (void)onAvatarInCell:(CellForWorkGroup *)cell{
-    
+    UserMainPageVC *usermainpagevc = [UserMainPageVC new];
+    [self.navigationController pushViewController:usermainpagevc animated:YES];
+    usermainpagevc.account = cell.model.userInfo.uid;
 }
 
 - (void)onMoreInCell:(CellForWorkGroup *)cell{

@@ -116,15 +116,8 @@
     self.commentView.textView.delegate = self;
 
 }
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if(section == 1){
-        return 40;
-    }else{
-        return 0;
-    }
 
-}
-
+#pragma mark - UITableViewDataSource
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     
     if(section == 1){
@@ -133,7 +126,7 @@
         return nil;
     }
 }
-#pragma mark - UITableViewDataSource
+
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 2;
 }
@@ -209,6 +202,14 @@
     }
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if(section == 1){
+        return 40;
+    }else{
+        return 0;
+    }
+    
+}
 
 #pragma mark - CellForWorkGroupDelegate
 - (void)onAvatarInCell:(CellForWorkGroup *)cell{

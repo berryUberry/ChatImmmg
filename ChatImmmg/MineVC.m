@@ -23,6 +23,7 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    self.tabBarController.tabBar.hidden = NO;
     self.tableView.hidden = NO;
     self.title = @"个人信息";
     [self.tableView reloadData];
@@ -95,8 +96,10 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
         }
     }else{
         if(indexPath.row == 0){
+            NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
             UserMainPageVC *usermainpageVC = [UserMainPageVC new];
-            [self presentViewController:usermainpageVC animated:YES completion:nil];
+            usermainpageVC.account = [userDefault objectForKey:@"account"];
+            [self.navigationController pushViewController:usermainpageVC animated:YES];
         }
         
     }
