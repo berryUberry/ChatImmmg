@@ -99,7 +99,7 @@
     [self.view addSubview:self.tableView];
     
 //    [self.tableView setEnableLoadNew:YES];
-    [self.tableView setEnableLoadMore:YES];
+//    [self.tableView setEnableLoadMore:YES];
     
     self.view.backgroundColor = RGBCOLOR(244, 244, 244);
     
@@ -209,6 +209,36 @@
         return 0;
     }
     
+}
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(indexPath.section == 1){
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+        if(editingStyle == UITableViewCellEditingStyleDelete){
+            
+            if([self.model.comments[indexPath.row].account isEqual:[userDefault objectForKey:@"account"]]){
+                [self deleteCommentHttp:indexPath commentID:self.model.comments[indexPath.row]._id];
+            }else{
+                [SVProgressHUD showInfoWithStatus:@"您无权删除该评论！"];
+            }
+            
+        }
+    }
+}
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return @"删除";
+}
+
+-(UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    if(indexPath.section != 1){
+        return UITableViewCellEditingStyleNone;
+    }
+    if(![self.model.comments[indexPath.row].account isEqual:[userDefault objectForKey:@"account"]]){
+        return UITableViewCellEditingStyleNone;
+    }
+    
+    return UITableViewCellEditingStyleDelete;
 }
 
 #pragma mark - CellForWorkGroupDelegate
@@ -393,6 +423,8 @@
             if([responseObject objectForKey:@"success"]){
                 [SVProgressHUD dismiss];
                 [SVProgressHUD showSuccessWithStatus:@"评论成功！"];
+                self.commentView.textView.text = @"";
+                [self getDetailTimeline];
             }else{
                 [SVProgressHUD dismiss];
                 [SVProgressHUD showInfoWithStatus:@"评论失败！"];
@@ -435,9 +467,42 @@
         self.commentCellheights = nil;
         [self calcCommentCellHeights];
         [self.tableView reloadData];
+        [SVProgressHUD dismiss];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"error"];
     }];
+}
+
+
+-(void)deleteCommentHttp:(NSIndexPath *)indexpath commentID:(NSString *)commentID{
+    [YHUtils showAlertWithTitle:@"删除评论" message:@"您确定要删除此评论?" okTitle:@"确定" cancelTitle:@"取消" inViewController:self dismiss:^(BOOL resultYes) {
+        
+        if (resultYes)
+        {
+            [SVProgressHUD show];
+            NSDictionary *params = @{@"comment_id":commentID
+                                     };
+            WeakSelf
+            [[NetworkManager shareNetwork]deleteCommentWithParam:params successful:^(NSDictionary *responseObject) {
+                NSLog(@"deleteComment%@",responseObject);
+                if([responseObject objectForKey:@"success"]){
+                    [weakSelf getDetailTimeline];
+                    
+                }
+            } failure:^(NSError *error) {
+                [SVProgressHUD showErrorWithStatus:@"error"];
+            }];
+            
+            
+            
+        }
+    }];
+
+    
+    
+    
+    
+
 }
 
 @end

@@ -48,6 +48,7 @@ typedef NS_ENUM(int,VisibleType){
 @property (nonatomic, assign) BOOL hiddenBotLine;//隐藏底部高度15的分隔线
 
 @property (nonatomic,strong) NSMutableArray<TimelineCommentModel *> *comments; //评论
-
+@property (nonatomic,strong) NSMutableArray<YHUserInfo *> *likes;//点赞的人
+@property (nonatomic,strong) NSString *liked;//点赞人数
 @end
 

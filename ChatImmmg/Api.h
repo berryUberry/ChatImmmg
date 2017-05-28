@@ -45,6 +45,10 @@ static NSString *param_getTimelines = @"/timeline/getTimelines";
 static NSString *param_deleteTimeline = @"/timeline/deleteTimeline";
 static NSString *param_postCommentTimeline = @"/timeline/comment";
 static NSString *param_getDetailTimeline = @"/timeline/getTimelineById";
+static NSString *param_thumbUpTimeline = @"/timeline/like";
+static NSString *param_deleteComment = @"/timeline/deleteComment";
+
+
 /**
  个人主页
  */

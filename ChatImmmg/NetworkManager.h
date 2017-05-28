@@ -86,6 +86,12 @@ typedef void (^FailureBlock)(NSError *error);
                         paramsUrl:(NSString *)paramsUrl
                        successful:(SuccessBlock)success
                           failure:(FailureBlock)failure;
+-(void)thumbUpTimelineWithParam:(NSDictionary *)params
+                     successful:(SuccessBlock)success
+                        failure:(FailureBlock)failure;
+-(void)deleteCommentWithParam:(NSDictionary *)params
+                   successful:(SuccessBlock)success
+                      failure:(FailureBlock)failure;
 
 /**
  个人主页

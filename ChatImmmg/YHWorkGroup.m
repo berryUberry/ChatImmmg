@@ -75,13 +75,15 @@ extern const CGFloat kMarginContentRight;
              @"publishTime" : @"publishDate",
              @"msgContent" : @"content",
              @"userInfo" : @"user",
-             @"thumbnailPicUrls" : @"images"};
+             @"thumbnailPicUrls" : @"images",
+             @"likeCount":@"liked"};
 }
 
 + (NSDictionary *)mj_objectClassInArray {
     return @{@"result" : @"YHWorkGroup",
              @"user" : @"YHUserInfo",
-             @"comments" : @"TimelineCommentModel"
+             @"comments" : @"TimelineCommentModel",
+             @"likes" : @"YHUserInfo"
              };
 }
 

@@ -24,11 +24,13 @@
     BOOL _reCalculate;
     
     NSString *lastTimelineID;
+    NSString *since_id;
     NSString *amount;
 }
 
 @property (nonatomic,strong) YHRefreshTableView *tableView;
 @property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *dataArray;
+@property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *newdataArray;
 @property (nonatomic,strong) NSMutableDictionary *heightDict;
 
 @property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *timelineList;
@@ -44,7 +46,7 @@
     self.tabBarController.tabBar.hidden = NO;
 }
 - (void)viewDidLoad {
-    amount = @"30";
+    amount = @"1";
     [super viewDidLoad];
     [self initUI];
 //    [self requestDataLoadNew:YES];
@@ -85,7 +87,8 @@
     self.navigationItem.rightBarButtonItem = addTimelineItem;
     
     
-    self.tableView = [[YHRefreshTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+//    self.tableView = [[YHRefreshTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.tableView = [[YHRefreshTableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 49) style:UITableViewStylePlain];
     self.tableView.delegate   = self;
     self.tableView.dataSource = self;
     self.tableView.backgroundColor = RGBCOLOR(244, 244, 244);
@@ -374,7 +377,8 @@
 }
 
 - (void)refreshTableViewLoadmore:(YHRefreshTableView*)view{
-    [self requestDataLoadNew:NO];
+//    [self requestDataLoadNew:NO];
+    [self getOldTimeline];
 }
 
 
@@ -396,25 +400,13 @@
 }
 
 - (void)onCommentInCell:(CellForWorkGroup *)cell{
-    
+    TimelineDetailVC *detailVC = [TimelineDetailVC new];
+    [self.navigationController pushViewController:detailVC animated:YES];
+    detailVC.model = cell.model;
 }
 
 - (void)onLikeInCell:(CellForWorkGroup *)cell{
-    if (cell.indexPath.row < [self.dataArray count]) {
-        YHWorkGroup *model = self.dataArray[cell.indexPath.row];
-        
-        BOOL isLike = !model.isLike;
-        
-        model.isLike = isLike;
-        if (isLike) {
-            model.likeCount += 1;
-            
-        }else{
-            model.likeCount -= 1;
-        }
-        
-        [self.tableView reloadRowsAtIndexPaths:@[cell.indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    }
+    [self thumbHttp:cell];
     
 }
 
@@ -589,8 +581,8 @@
 -(void)getTimelines{
     NSString *paramUrlpre = [@"?amount=" stringByAppendingString:amount];
     NSString *paramUrl;
-    if(lastTimelineID){
-        NSString *paramUrl2 = [@"&lastTimelineID=" stringByAppendingString:lastTimelineID];
+    if(since_id){
+        NSString *paramUrl2 = [@"&since_id=" stringByAppendingString:since_id];
         paramUrl = [paramUrlpre stringByAppendingString:paramUrl2];
     }else{
         paramUrl = paramUrlpre;
@@ -598,29 +590,149 @@
     [[NetworkManager shareNetwork]getTimelinesWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"getTimelines%@",responseObject);
         
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
         
-        self.dataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-        for(int i = 0;i<self.dataArray.count;i++){
-//            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
+        self.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+        for(int i = 0;i<self.newdataArray.count;i++){
+            //            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
             
-            for(int j = 0;j<self.dataArray[i].images.count;j++){
+            for(int j = 0;j<self.newdataArray[i].images.count;j++){
                 if(j == 0){
-                    self.dataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.dataArray[i].images[j]], nil];
+                    self.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.newdataArray[i].images[j]], nil];
                 }else{
-                    [self.dataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.dataArray[i].images[j]]];
+                    [self.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.newdataArray[i].images[j]]];
                 }
-            
+                
             }
-            self.dataArray[i].originalPicUrls = self.dataArray[i].thumbnailPicUrls;
+            self.newdataArray[i].originalPicUrls = self.newdataArray[i].thumbnailPicUrls;
+            
+            for(int q = 0;q<self.newdataArray[i].likes.count;q++){
+                self.newdataArray[i].isLike = NO;
+                if([self.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                    self.newdataArray[i].isLike = YES;
+                    break;
+                }
+            }
+            self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
+            self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
         }
-        if(self.dataArray){
-            lastTimelineID = self.dataArray[0].dynamicId;
-        }
-        [self.tableView reloadData];
         
+        if(self.dataArray){
+//            self.dataArray = [NSMutableArray arrayWithObjects:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray], nil];
+            self.dataArray = [NSMutableArray arrayWithArray:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray]];
+            
+            
+        }else{
+            self.dataArray = self.newdataArray;
+            
+        }
+//        self.dataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+//        for(int i = 0;i<self.dataArray.count;i++){
+////            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
+//            
+//            for(int j = 0;j<self.dataArray[i].images.count;j++){
+//                if(j == 0){
+//                    self.dataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.dataArray[i].images[j]], nil];
+//                }else{
+//                    [self.dataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.dataArray[i].images[j]]];
+//                }
+//            
+//            }
+//            self.dataArray[i].originalPicUrls = self.dataArray[i].thumbnailPicUrls;
+//        }
+        if(self.dataArray){
+            since_id = self.dataArray[0].dynamicId;
+            lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+            
+        }
+        self.newdataArray = nil;
+        [self.tableView reloadData];
+        [self.tableView loadFinish:YHRefreshType_LoadNew];
         
     } failure:^(NSError *error) {
         
+    }];
+}
+
+-(void)getOldTimeline{
+    NSString *paramUrlpre = [@"?amount=" stringByAppendingString:amount];
+    NSString *paramUrl;
+    if(lastTimelineID){
+        
+        NSString *paramUrl2 = [@"&lastTimelineID=" stringByAppendingString:lastTimelineID];
+        paramUrl = [paramUrlpre stringByAppendingString:paramUrl2];
+        
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+        
+        [[NetworkManager shareNetwork]getTimelinesWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+            NSLog(@"getoldTimeline%@",responseObject);
+            self.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+            for(int i = 0;i<self.newdataArray.count;i++){
+                for(int j = 0;j<self.newdataArray[i].images.count;j++){
+                    if(j == 0){
+                        self.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.newdataArray[i].images[j]], nil];
+                    }else{
+                        [self.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.newdataArray[i].images[j]]];
+                    }
+                    
+                }
+                self.newdataArray[i].originalPicUrls = self.newdataArray[i].thumbnailPicUrls;
+                
+                
+                for(int q = 0;q<self.newdataArray[i].likes.count;q++){
+                    self.newdataArray[i].isLike = NO;
+                    if([self.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                        self.newdataArray[i].isLike = YES;
+                        break;
+                    }
+                }
+                self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
+                self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
+            }
+   
+            if(self.dataArray){
+                self.dataArray = [NSMutableArray arrayWithArray:[self.dataArray arrayByAddingObjectsFromArray:self.newdataArray]];
+            }else{
+                self.dataArray = self.newdataArray;
+            }
+            if(self.dataArray){
+                lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+            }
+            self.newdataArray = nil;
+            
+            [self.tableView loadFinish:YHRefreshType_LoadMore];
+            [self.tableView reloadData];
+        } failure:^(NSError *error) {
+            
+        }];
+    }
+}
+
+-(void)thumbHttp:(CellForWorkGroup *)cell{
+    NSDictionary *params = @{@"timelineID":cell.model.dynamicId
+                             };
+    [[NetworkManager shareNetwork]thumbUpTimelineWithParam:params successful:^(NSDictionary *responseObject) {
+        NSLog(@"thumbUp%@",responseObject);
+        if([responseObject objectForKey:@"success"]){
+            if (cell.indexPath.row < [self.dataArray count]) {
+                YHWorkGroup *model = self.dataArray[cell.indexPath.row];
+                
+                BOOL isLike = !model.isLike;
+                
+                model.isLike = isLike;
+                if (isLike) {
+                    model.likeCount += 1;
+                    
+                }else{
+                    model.likeCount -= 1;
+                }
+                
+                [self.tableView reloadRowsAtIndexPaths:@[cell.indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            }
+        }
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
     }];
 }
 

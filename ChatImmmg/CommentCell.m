@@ -36,6 +36,7 @@
 
 -(void)createCommentCell{
     UIImageView *headImg = [UIImageView new];
+    headImg.image = [UIImage imageNamed:@"common_avatar_120px"];
     [self addSubview:headImg];
     self.headImg = headImg;
     [headImg mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -88,7 +89,9 @@
 
 
 -(void)configModel:(TimelineCommentModel *)model{
-    [self.headImg sd_setImageWithURL:[NSURL URLWithString:model.user.avatar]];
+    if(model.user.avatar){
+        [self.headImg sd_setImageWithURL:[NSURL URLWithString:model.user.avatar]];
+    }
     self.name.text = model.name;
     self.time.text = model.publishDate;
     self.content.text = model.content;

@@ -170,6 +170,22 @@ static NetworkManager *shareManager = nil;
 
 }
 
+-(void)thumbUpTimelineWithParam:(NSDictionary *)params successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_thumbUpTimeline parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+}
+
+-(void)deleteCommentWithParam:(NSDictionary *)params successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_deleteComment parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+}
+
 /**
  个人主页
  */
