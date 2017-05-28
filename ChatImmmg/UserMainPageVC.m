@@ -29,6 +29,7 @@
 
 @property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *timelineList;
 @property (nonatomic,strong) UserInfo *userinfo;
+@property (nonatomic,assign) BOOL isfollow;
 
 @end
 
@@ -53,7 +54,12 @@
 }
 
 -(void)setUpUI{
-    self.title = @"我的主页";
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    if([[userDefault objectForKey:@"account"] isEqual:self.account]){
+        self.title = @"我的主页";
+    }else{
+        self.title = @"主页";
+    }
     
     //设置导航栏背景颜色
     UIColor * color = [UIColor colorWithRed:0.f green:191.f / 255 blue:143.f / 255 alpha:1];
@@ -108,6 +114,13 @@
             [cell configModel:self.userinfo.avatar name:self.userinfo.name isHide:@"hide"];
         }else{
             [cell configModel:self.userinfo.avatar name:self.userinfo.name isHide:@"show"];
+            [cell.chatBtn addTarget:self action:@selector(chat) forControlEvents:UIControlEventTouchUpInside];
+            [cell.followBtn addTarget:self action:@selector(follow) forControlEvents:UIControlEventTouchUpInside];
+            if(self.isfollow){
+                [cell.followBtn setTitle:@"已关注" forState:normal];
+            }else{
+                [cell.followBtn setTitle:@"关注" forState:normal];
+            }
         }
     
         return cell;
@@ -226,7 +239,7 @@
             }
             self.dataArray[i].originalPicUrls = self.dataArray[i].thumbnailPicUrls;
         }
-        if(self.dataArray){
+        if(self.dataArray.count>0){
             lastTimelineID = self.dataArray[0].dynamicId;
         }
         [self.tableView reloadData];
@@ -243,11 +256,54 @@
     [[NetworkManager shareNetwork]getPersonalInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"getuserinfo%@",responseObject);
         self.userinfo = [UserInfo mj_objectWithKeyValues:[[responseObject objectForKey:@"result"] objectForKey:@"user"]];
+        NSLog(@"%@",[[[responseObject objectForKey:@"result"] objectForKey:@"follow"] class]);
+        if(![[[[responseObject objectForKey:@"result"] objectForKey:@"follow"] class] isEqual:[NSNull class]]){
+            self.isfollow = YES;
+        }else{
+            self.isfollow = NO;
+        }
         [self.tableView reloadData];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"error"];
     }];
     
+}
+
+
+-(void)follow{
+    
+    NSDictionary *params = @{@"account":self.account
+                             };
+    WeakSelf
+    
+    
+    [[NetworkManager shareNetwork]followWithParam:params isfollow:self.isfollow successful:^(NSDictionary *responseObject) {
+        NSLog(@"%d%@",self.isfollow,responseObject);
+        if([responseObject objectForKey:@"success"]){
+            weakSelf.isfollow = !weakSelf.isfollow;
+            [weakSelf.tableView reloadData];
+        }
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
+    
+    
+}
+
+-(void)chat{
+    //新建一个聊天会话View Controller对象,建议这样初始化
+    RCConversationViewController *chat = [[RCConversationViewController alloc] initWithConversationType:ConversationType_PRIVATE
+                                                                                               targetId:self.account];
+    
+    //    //设置会话的类型，如单聊、讨论组、群聊、聊天室、客服、公众服务会话等
+    //    chat.conversationType = ConversationType_PRIVATE;
+    //    //设置会话的目标会话ID。（单聊、客服、公众服务会话为对方的ID，讨论组、群聊、聊天室为会话的ID）
+    //    chat.targetId = @"targetIdYouWillChatIn";
+    
+    //设置聊天会话界面要显示的标题
+    chat.title = self.account;
+    //显示聊天会话界面
+    [self.navigationController pushViewController:chat animated:YES];
 }
 
 @end

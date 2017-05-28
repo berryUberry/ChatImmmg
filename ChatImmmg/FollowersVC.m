@@ -20,12 +20,14 @@ static NSString *cellIdentifier = @"FollowersCellIdentifier";
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    self.tabBarController.tabBar.hidden = YES;
     
 //    [self follow];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.title = @"我的关注";
     UITableView *tableView = [UITableView new];
     tableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     [tableView registerClass:[FollowersCell class] forCellReuseIdentifier:cellIdentifier];
@@ -75,8 +77,7 @@ static NSString *cellIdentifier = @"FollowersCellIdentifier";
     NSString *account = [userDefault objectForKey:@"account"];
     NSString *paramsUrl = [@"?account=" stringByAppendingString:account];
     [[NetworkManager shareNetwork]getFollowersList:nil paramsUrl:paramsUrl successful:^(NSDictionary *responseObject) {
-        NSLog(@"%@",responseObject);
-        NSLog(@"%@",[responseObject objectForKey:@"error"]);
+        NSLog(@"followeslist%@",responseObject);
         if([responseObject objectForKey:@"error"]){
             [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
         }else{

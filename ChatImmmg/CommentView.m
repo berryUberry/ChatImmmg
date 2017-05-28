@@ -26,7 +26,7 @@
 - (void)setupView{
 //    self.backgroundColor = [UIColor colorWithHexString:@"#DBDBDB"];
     //    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(10, 14, 30, 20)];
-    self.backgroundColor = [UIColor grayColor];
+    self.backgroundColor = [UIColor colorWithRed:192/255.0f green:192/255.0f blue:192/255.0f alpha:1.0f];
     UILabel *label = [UILabel new];
     [self addSubview:label];
     label.font = [UIFont systemFontOfSize:13];

@@ -9,11 +9,15 @@
 #import "MineVC.h"
 #import "HeadCell.h"
 #import "MineBaseCell.h"
+#import "ExitCell.h"
 #import "ChangeVC.h"
 #import "UserMainPageVC.h"
+#import "FollowersVC.h"
+#import "LoginVC.h"
 
 static NSString *HeadCellIdentifier = @"HeadCellIdentifier";
 static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
+static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
 
 @interface MineVC ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 @property(nonatomic,strong)UITableView *tableView;
@@ -40,6 +44,7 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
     tableView.dataSource = self;
     [tableView registerClass:[HeadCell class] forCellReuseIdentifier:HeadCellIdentifier];
     [tableView registerClass:[MineBaseCell class] forCellReuseIdentifier:MineBaseCellIdentifier];
+    [tableView registerClass:[ExitCell class] forCellReuseIdentifier:ExitCellIdentifier];
     tableView.tableFooterView = [UIView new];
     self.tableView = tableView;
     
@@ -68,6 +73,9 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
             return 40;
         }
     }else{
+        if(indexPath.row == 2){
+            return 60;
+        }
         return 40;
     }
 }
@@ -100,6 +108,9 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
             UserMainPageVC *usermainpageVC = [UserMainPageVC new];
             usermainpageVC.account = [userDefault objectForKey:@"account"];
             [self.navigationController pushViewController:usermainpageVC animated:YES];
+        }else if(indexPath.row == 1){
+            FollowersVC *followersVC = [FollowersVC new];
+            [self.navigationController pushViewController:followersVC animated:YES];
         }
         
     }
@@ -114,7 +125,7 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
     if(section == 0){
         return 4;
     }else{
-        return 1;
+        return 3;
     }
 }
 
@@ -149,10 +160,22 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
             return cell;
         }
     }else{
-        MineBaseCell *cell = [[MineBaseCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MineBaseCellIdentifier];
-        [cell configModel:@"个人主页" last:nil];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
+        if(indexPath.row == 0){
+            MineBaseCell *cell = [[MineBaseCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MineBaseCellIdentifier];
+            [cell configModel:@"个人主页" last:nil];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return cell;
+        }else if(indexPath.row == 1){
+            MineBaseCell *cell = [[MineBaseCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MineBaseCellIdentifier];
+            [cell configModel:@"关注" last:nil];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return cell;
+        }else{
+            ExitCell *cell = [[ExitCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ExitCellIdentifier];
+            [cell.exitBtn addTarget:self action:@selector(exit) forControlEvents:UIControlEventTouchUpInside];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return cell;
+        }
     }
 }
 
@@ -265,5 +288,16 @@ static NSString *MineBaseCellIdentifier = @"MineBaseCellIdentifier";
         [SVProgressHUD showErrorWithStatus:@"error"];
     }];
 
+}
+
+-(void)exit{
+    LoginVC *loginVC = [LoginVC new];
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    [userDefault setObject:nil forKey:@"account"];
+    [userDefault setObject:nil forKey:@"name"];
+    [userDefault setObject:nil forKey:@"motto"];
+    [userDefault setObject:nil forKey:@"avatar"];
+    [userDefault setObject:nil forKey:@"token"];
+    [self presentViewController:loginVC animated:YES completion:nil];
 }
 @end

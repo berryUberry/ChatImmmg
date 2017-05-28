@@ -56,12 +56,20 @@ static NetworkManager *shareManager = nil;
 /**
  关注
  */
--(void)followWithParam:(NSDictionary *)params isfollow:(NSString *)isfollow successful:(SuccessBlock)success failure:(FailureBlock)failure{
-    [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_follow parameters:params success:^(NSDictionary *responseObject) {
-        success(responseObject);
-    } failure:^(NSError *error) {
-        failure(error);
-    }];
+-(void)followWithParam:(NSDictionary *)params isfollow:(BOOL)isfollow successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    if(isfollow){
+        [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_unfollow parameters:params success:^(NSDictionary *responseObject) {
+            success(responseObject);
+        } failure:^(NSError *error) {
+            failure(error);
+        }];
+    }else{
+        [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_follow parameters:params success:^(NSDictionary *responseObject) {
+            success(responseObject);
+        } failure:^(NSError *error) {
+            failure(error);
+        }];
+    }
 
 }
 

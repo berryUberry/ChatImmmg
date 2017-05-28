@@ -37,7 +37,7 @@ typedef void (^FailureBlock)(NSError *error);
  关注
  */
 -(void)followWithParam:(NSDictionary *)params
-              isfollow:(NSString *)isfollow
+              isfollow:(BOOL)isfollow
             successful:(SuccessBlock)success
                failure:(FailureBlock)failure;
 
