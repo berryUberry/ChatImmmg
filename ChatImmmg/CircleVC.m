@@ -51,8 +51,9 @@
     [self initUI];
 //    [self requestDataLoadNew:YES];
     [self getTimelines];
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
     //设置UserId
-    [YHUserInfoManager sharedInstance].userInfo.uid = @"a";
+    [YHUserInfoManager sharedInstance].userInfo.uid = [userDefault objectForKey:@"account"];
     
     
 }
@@ -64,10 +65,10 @@
 
 - (void)initUI{
     
-    self.title = @"BerryCircle";
+//    self.title = @"BerryCircle";
     
     //设置导航栏背景颜色
-    UIColor * color = [UIColor colorWithRed:0.f green:191.f / 255 blue:143.f / 255 alpha:1];
+    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
     self.navigationController.navigationBar.barTintColor = color;
     self.navigationController.navigationBar.translucent = NO;
     
@@ -615,9 +616,10 @@
             }
             self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
             self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
+            self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
         }
         
-        if(self.dataArray){
+        if(self.dataArray.count>0){
 //            self.dataArray = [NSMutableArray arrayWithObjects:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray], nil];
             self.dataArray = [NSMutableArray arrayWithArray:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray]];
             
@@ -626,21 +628,8 @@
             self.dataArray = self.newdataArray;
             
         }
-//        self.dataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-//        for(int i = 0;i<self.dataArray.count;i++){
-////            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
-//            
-//            for(int j = 0;j<self.dataArray[i].images.count;j++){
-//                if(j == 0){
-//                    self.dataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.dataArray[i].images[j]], nil];
-//                }else{
-//                    [self.dataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.dataArray[i].images[j]]];
-//                }
-//            
-//            }
-//            self.dataArray[i].originalPicUrls = self.dataArray[i].thumbnailPicUrls;
-//        }
-        if(self.dataArray){
+
+        if(self.dataArray.count>0){
             since_id = self.dataArray[0].dynamicId;
             lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
             
@@ -688,6 +677,7 @@
                 }
                 self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
                 self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
+                self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
             }
    
             if(self.dataArray){
@@ -734,6 +724,25 @@
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"error"];
     }];
+}
+
+-(NSString *)configTime:(long)timestamp{
+
+//    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+//    [formatter setDateStyle:NSDateFormatterMediumStyle];
+//    [formatter setTimeStyle:NSDateFormatterShortStyle];
+//    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:ss"];//@"yyyy-MM-dd-HHMMss"
+//    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[timestamp doubleValue]];
+//    NSString *dateString = [formatter stringFromDate:date];
+//    return dateString;
+    NSString*tempTime =[[NSNumber numberWithLong:timestamp] stringValue];
+    NSMutableString *getTime = [NSMutableString stringWithFormat:@"%@",tempTime];
+    [getTime deleteCharactersInRange:NSMakeRange(10,3)];
+    NSDateFormatter *matter = [[NSDateFormatter alloc]init];
+    matter.dateFormat =@"YY-MM-dd HH:mm";
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[getTime intValue]];
+    NSString *timeStr = [matter stringFromDate:date];
+    return timeStr;
 }
 
 @end

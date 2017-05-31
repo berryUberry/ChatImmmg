@@ -23,6 +23,22 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //设置导航栏背景颜色
+    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
+    self.navigationController.navigationBar.barTintColor = color;
+    self.navigationController.navigationBar.translucent = NO;
+    
+    NSShadow *shadow = [[NSShadow alloc]init];
+    shadow.shadowColor = [UIColor colorWithWhite:0.871 alpha:1.000];
+    shadow.shadowOffset = CGSizeMake(0.5, 0.5);
+    
+    //设置导航栏标题颜色
+    NSDictionary *attributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:18],NSShadowAttributeName:shadow};
+    self.navigationController.navigationBar.titleTextAttributes = attributes;
+    
+    
+    
     // 启动GPS，图片中会包含对应的地理位置的信息
     [[TuSDKTKLocation shared] requireAuthorWithController:self];
     [TuSDK checkManagerWithDelegate:self];

@@ -29,13 +29,26 @@ static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
     [super viewWillAppear:animated];
     self.tabBarController.tabBar.hidden = NO;
     self.tableView.hidden = NO;
-    self.title = @"个人信息";
+//    self.title = @"个人信息";
     [self.tableView reloadData];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    //设置导航栏背景颜色
+    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
+    self.navigationController.navigationBar.barTintColor = color;
+    self.navigationController.navigationBar.translucent = NO;
+    
+    NSShadow *shadow = [[NSShadow alloc]init];
+    shadow.shadowColor = [UIColor colorWithWhite:0.871 alpha:1.000];
+    shadow.shadowOffset = CGSizeMake(0.5, 0.5);
+    
+    //设置导航栏标题颜色
+    NSDictionary *attributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:18],NSShadowAttributeName:shadow};
+    self.navigationController.navigationBar.titleTextAttributes = attributes;
     
     UITableView *tableView = [UITableView new];
     tableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
@@ -53,7 +66,6 @@ static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     self.tableView.hidden = YES;
-    self.title = @"";
     
 }
 

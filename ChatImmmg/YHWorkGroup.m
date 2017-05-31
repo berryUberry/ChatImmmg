@@ -72,7 +72,6 @@ extern const CGFloat kMarginContentRight;
 + (NSDictionary *)mj_replacedKeyFromPropertyName{
     return @{@"dynamicId" : @"_id",
              @"userInfo" : @"user",
-             @"publishTime" : @"publishDate",
              @"msgContent" : @"content",
              @"userInfo" : @"user",
              @"thumbnailPicUrls" : @"images",
@@ -86,5 +85,6 @@ extern const CGFloat kMarginContentRight;
              @"likes" : @"YHUserInfo"
              };
 }
+
 
 @end

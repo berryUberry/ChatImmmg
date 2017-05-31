@@ -23,13 +23,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ChatImmmg/CircleVC.m"
-            timestampString = "517635230.995503"
+            filePath = "ChatImmmg/LoginVC.m"
+            timestampString = "517723851.364572"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "717"
-            endingLineNumber = "717"
-            landmarkName = "-thumbHttp:"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
+            landmarkName = "-getUserInfoWithUserId:completion:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

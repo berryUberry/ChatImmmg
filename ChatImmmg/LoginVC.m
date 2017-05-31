@@ -9,9 +9,11 @@
 #import "LoginVC.h"
 #import "LoginView.h"
 #import "TabBarVC.h"
+#import "UserInfo.h"
 
-@interface LoginVC ()
+@interface LoginVC ()<RCIMUserInfoDataSource>
 @property(nonatomic , strong)LoginView *loginView;
+@property(nonatomic,strong)UserInfo *info;
 
 @end
 
@@ -35,6 +37,7 @@
 
 -(void)loginAction{
     if([_loginView.loginButton.titleLabel.text  isEqual: @"登陆"]){
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
         NSDictionary *params = @{@"account":[self.loginView.scrollView getLoginAccount],
                                  @"password":[self.loginView.scrollView getLoginPassword]
                                  
@@ -49,6 +52,9 @@
                 NSDictionary *result = [responseObject objectForKey:@"result"];
                 [[RCIM sharedRCIM] connectWithToken:[result objectForKey:@"token"]     success:^(NSString *userId) {
                     NSLog(@"登陆成功。当前登录的用户ID：%@", userId);
+                    [[RCIM sharedRCIM] setUserInfoDataSource:self];
+                    RCUserInfo *currentUser = [[RCUserInfo alloc]initWithUserId:userId name:[userDefault objectForKey:@"name"] portrait:[userDefault objectForKey:@"avatar"]];
+                    [RCIMClient sharedRCIMClient].currentUserInfo = currentUser;
                 } error:^(RCConnectErrorCode status) {
                     NSLog(@"登陆的错误码为:%ld", (long)status);
                 } tokenIncorrect:^{
@@ -119,5 +125,25 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+-(void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion{
+    NSString *paramUrl = [@"?account=" stringByAppendingString:userId];
+    RCUserInfo *user = [[RCUserInfo alloc]init];
+    WeakSelf
+    [[NetworkManager shareNetwork]getPersonalInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+        NSLog(@"getuserinfo%@",responseObject);
+        weakSelf.info = [UserInfo mj_objectWithKeyValues:[[responseObject objectForKey:@"result"] objectForKey:@"user"]];
+        //        [userDefault setObject:weakSelf.info forKey:account];
+        user.userId = userId;
+        user.name = weakSelf.info.name;
+        user.portraitUri = weakSelf.info.avatar;
+        return completion(user);
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
+}
+
+
+
 
 @end

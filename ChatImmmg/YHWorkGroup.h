@@ -50,5 +50,6 @@ typedef NS_ENUM(int,VisibleType){
 @property (nonatomic,strong) NSMutableArray<TimelineCommentModel *> *comments; //评论
 @property (nonatomic,strong) NSMutableArray<YHUserInfo *> *likes;//点赞的人
 @property (nonatomic,strong) NSString *liked;//点赞人数
+@property (nonatomic,assign) long publishDate;//时间戳
 @end
 

@@ -11,8 +11,10 @@
 
 #import "TabBarVC.h"
 #import "LoginVC.h"
+#import "UserInfo.h"
 
-@interface AppDelegate ()
+@interface AppDelegate ()<RCIMUserInfoDataSource>
+@property(nonatomic,strong) UserInfo *info;
 
 @end
 
@@ -54,6 +56,9 @@
         
         [[RCIM sharedRCIM] connectWithToken:[userDefault objectForKey:@"token"]     success:^(NSString *userId) {
             NSLog(@"登陆成功。当前登录的用户ID：%@", userId);
+            [[RCIM sharedRCIM] setUserInfoDataSource:self];
+            RCUserInfo *currentUser = [[RCUserInfo alloc]initWithUserId:userId name:[userDefault objectForKey:@"name"] portrait:[userDefault objectForKey:@"avatar"]];
+            [RCIMClient sharedRCIMClient].currentUserInfo = currentUser;
         } error:^(RCConnectErrorCode status) {
             NSLog(@"登陆的错误码为:%ld", (long)status);
         } tokenIncorrect:^{
@@ -72,6 +77,28 @@
     
     return YES;
 }
+
+-(void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion{
+    NSString *paramUrl = [@"?account=" stringByAppendingString:userId];
+    RCUserInfo *user = [[RCUserInfo alloc]init];
+    WeakSelf
+    [[NetworkManager shareNetwork]getPersonalInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+        NSLog(@"getuserinfo%@",responseObject);
+        weakSelf.info = [UserInfo mj_objectWithKeyValues:[[responseObject objectForKey:@"result"] objectForKey:@"user"]];
+        //        [userDefault setObject:weakSelf.info forKey:account];
+        user.userId = userId;
+        user.name = weakSelf.info.name;
+        user.portraitUri = weakSelf.info.avatar;
+        return completion(user);
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
+
+    
+    
+    
+}
+
 
 
 - (void)applicationWillResignActive:(UIApplication *)application {

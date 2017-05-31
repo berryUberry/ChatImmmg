@@ -22,6 +22,7 @@
 @property(nonatomic,strong)NSString *following;
 
 @property(nonatomic,strong)NSString *name;
+@property(nonatomic,strong)NSString *motto;
 
 
 @end

@@ -235,11 +235,6 @@ static NetworkManager *shareManager = nil;
                     success:(SuccessBlock)successBlock
                     failure:(FailureBlock)failureBlock{
 
-//    Reachability *reachability = [Reachability reachabilityForInternetConnection];
-//    if (reachability) {
-//        [SVProgressHUD showInfoWithStatus:@"亲，您的网络飞走啦～"];
-//    }
-    
     // 启动系统风火轮
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];

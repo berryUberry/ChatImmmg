@@ -7,6 +7,7 @@
 //
 
 #import "ChatListVC.h"
+#import "UserInfo.h"
 
 
 @interface ChatListVC ()
@@ -34,6 +35,19 @@
     //设置需要将哪些类型的会话在会话列表中聚合显示
     [self setCollectionConversationType:@[@(ConversationType_DISCUSSION),
                                           @(ConversationType_GROUP)]];
+    
+    //设置导航栏背景颜色
+    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
+    self.navigationController.navigationBar.barTintColor = color;
+    self.navigationController.navigationBar.translucent = NO;
+    
+    NSShadow *shadow = [[NSShadow alloc]init];
+    shadow.shadowColor = [UIColor colorWithWhite:0.871 alpha:1.000];
+    shadow.shadowOffset = CGSizeMake(0.5, 0.5);
+    
+    //设置导航栏标题颜色
+    NSDictionary *attributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:18],NSShadowAttributeName:shadow};
+    self.navigationController.navigationBar.titleTextAttributes = attributes;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -49,7 +63,7 @@
     RCConversationViewController *conversationVC = [[RCConversationViewController alloc]init];
     conversationVC.conversationType = model.conversationType;
     conversationVC.targetId = model.targetId;
-    conversationVC.title = @"想显示的会话标题";
+    conversationVC.title = model.conversationTitle;
     self.tabBarController.tabBar.hidden = YES;
     [self.navigationController pushViewController:conversationVC animated:YES];
 }
@@ -64,5 +78,6 @@
     // Pass the selected object to the new view controller.
 }
 */
+
 
 @end
