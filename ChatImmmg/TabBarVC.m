@@ -25,8 +25,9 @@
 -(void)configViewController{
     TuImgVC *tuimgVC = [TuImgVC new];
     tuimgVC.title = @"P图";
-    tuimgVC.tabBarItem.image = [UIImage imageNamed:@"workgroup_img_comment"];
+    tuimgVC.tabBarItem.image = [UIImage imageNamed:@"image_32x32"];
     UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:tuimgVC];
+    nav.navigationBar.tintColor = [UIColor whiteColor];
     [self addChildViewController:nav];
     
 //    PcircleVC *vc2 = [PcircleVC new];
@@ -37,15 +38,17 @@
     
     CircleVC *vc = [CircleVC new];
     vc.title = @"动态";
-    vc.tabBarItem.image =  [UIImage imageNamed:@"workgroup_img_comment"];
+    vc.tabBarItem.image =  [UIImage imageNamed:@"circle"];
     UINavigationController *nav2 = [[UINavigationController alloc]initWithRootViewController:vc];
+    nav2.navigationBar.tintColor = [UIColor whiteColor];
     [self addChildViewController:nav2];
     
     
     ChatListVC *chatListVC = [ChatListVC new];
     chatListVC.title = @"最近聊天";
-    chatListVC.tabBarItem.image =  [UIImage imageNamed:@"workgroup_img_comment"];
+    chatListVC.tabBarItem.image =  [UIImage imageNamed:@"chat_32x32"];
     UINavigationController *navChatListVC = [[UINavigationController alloc]initWithRootViewController:chatListVC];
+    navChatListVC.navigationBar.tintColor = [UIColor whiteColor];
     [self addChildViewController:navChatListVC];
     
 //    FollowersVC *followersVC = [FollowersVC new];
@@ -53,12 +56,14 @@
 //    [self addChildViewController:followersnav];
     MineVC *mineVC = [MineVC new];
     mineVC.title = @"个人信息";
-    mineVC.tabBarItem.image = [UIImage imageNamed:@"workgroup_img_comment"];
+    mineVC.tabBarItem.image = [UIImage imageNamed:@"user_24x32"];
     UINavigationController *mineNav = [[UINavigationController alloc]initWithRootViewController:mineVC];
+    mineNav.navigationBar.tintColor = [UIColor whiteColor];
     [self addChildViewController:mineNav];
     
     UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
     self.tabBar.tintColor = color;
+    
     
 
 }

@@ -47,10 +47,12 @@
     }];
     
     UIImageView *icon = [UIImageView new];
-    icon.image = [UIImage imageNamed:@"morentouxiang"];
+    icon.image = [UIImage imageNamed:@"common_avatar_120px"];
     [self addSubview:icon];
     icon.layer.borderWidth = 0.5f;
     icon.layer.borderColor = [UIColor grayColor].CGColor;
+    icon.layer.cornerRadius = 6;
+    icon.layer.masksToBounds = YES;
     self.icon = icon;
     [icon mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-20);

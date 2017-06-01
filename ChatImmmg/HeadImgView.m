@@ -49,7 +49,7 @@
 
     /***************************头像*********************************/
     UIImageView *head = [UIImageView new];
-    head.image = [UIImage imageNamed:@"morentouxiang"];
+    head.image = [UIImage imageNamed:@"common_avatar_120px"];
     head.userInteractionEnabled = YES;
     head.layer.masksToBounds = YES;
     [contentView addSubview:head];

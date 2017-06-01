@@ -16,7 +16,7 @@
 @property(nonatomic,strong) NSString *authorAccount;
 @property(nonatomic,strong) NSString *content;
 @property(nonatomic,strong) NSString *name;
-@property(nonatomic,strong) NSString *publishDate;
+@property(nonatomic,assign) long publishDate;
 @property(nonatomic,strong) NSString *timelineID;
 @property(nonatomic,strong) NSString *avatar;
 @property(nonatomic,strong) UserInfo *user;

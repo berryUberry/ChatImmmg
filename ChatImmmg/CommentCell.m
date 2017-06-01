@@ -55,7 +55,7 @@
     [name mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(headImg.mas_top).offset(10);
         make.left.equalTo(headImg.mas_right).offset(10);
-        make.width.mas_equalTo(100);
+        make.width.mas_equalTo(220);
         make.height.mas_equalTo(20);
     }];
     
@@ -68,7 +68,7 @@
     [time mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(name.mas_top);
         make.right.mas_equalTo(-10);
-        make.width.mas_equalTo(200);
+        make.width.mas_equalTo(80);
         make.height.mas_equalTo(20);
     }];
     
@@ -93,8 +93,16 @@
         [self.headImg sd_setImageWithURL:[NSURL URLWithString:model.user.avatar]];
     }
     self.name.text = model.name;
-    self.time.text = model.publishDate;
     self.content.text = model.content;
+    NSString *tempTime =[[NSNumber numberWithLong:model.publishDate] stringValue];
+    NSMutableString *getTime = [NSMutableString stringWithFormat:@"%@",tempTime];
+    [getTime deleteCharactersInRange:NSMakeRange(10,3)];
+    NSDateFormatter *matter = [[NSDateFormatter alloc]init];
+    matter.dateFormat =@"YY-MM-dd HH:mm";
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[getTime intValue]];
+    NSString *timeStr = [matter stringFromDate:date];
+    self.time.text = timeStr;
+    
 }
 
 @end

@@ -21,10 +21,13 @@
 
 @interface UserMainPageVC ()<UITableViewDelegate,UITableViewDataSource,CellForWorkGroupDelegate>{
     NSString *lastTimelineID;
+    NSString *amount;
+    NSString *since_id;
 }
 
 @property (nonatomic,strong) YHRefreshTableView *tableView;
 @property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *dataArray;
+@property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *newdataArray;
 @property (nonatomic,strong) NSMutableDictionary *heightDict;
 
 @property (nonatomic,strong) NSMutableArray<YHWorkGroup *> *timelineList;
@@ -38,13 +41,14 @@
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     self.tabBarController.tabBar.hidden = YES;
-    [self getTimelineByUser];
+    [self getTimelinesByUser];
     [self getUserinfoByUser];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    amount = @"1";
     [self setUpUI];
 }
 
@@ -61,18 +65,6 @@
         self.title = @"主页";
     }
     
-    //设置导航栏背景颜色
-    UIColor * color = [UIColor colorWithRed:0.f green:191.f / 255 blue:143.f / 255 alpha:1];
-    self.navigationController.navigationBar.barTintColor = color;
-    self.navigationController.navigationBar.translucent = NO;
-    
-    NSShadow *shadow = [[NSShadow alloc]init];
-    shadow.shadowColor = [UIColor colorWithWhite:0.871 alpha:1.000];
-    shadow.shadowOffset = CGSizeMake(0.5, 0.5);
-    
-    //设置导航栏标题颜色
-    NSDictionary *attributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:18],NSShadowAttributeName:shadow};
-    self.navigationController.navigationBar.titleTextAttributes = attributes;
     
     self.tableView = [[YHRefreshTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.delegate   = self;
@@ -111,9 +103,9 @@
     if(indexPath.section == 0){
         TopViewCell *cell = [[TopViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([TopViewCell class])];
         if([[userDefault objectForKey:@"account"] isEqual:self.account]){
-            [cell configModel:self.userinfo.avatar name:self.userinfo.name isHide:@"hide"];
+            [cell configModel:self.userinfo.avatar name:self.userinfo.name isHide:@"hide" motto:self.userinfo.motto];
         }else{
-            [cell configModel:self.userinfo.avatar name:self.userinfo.name isHide:@"show"];
+            [cell configModel:self.userinfo.avatar name:self.userinfo.name isHide:@"show" motto:self.userinfo.motto];
             [cell.chatBtn addTarget:self action:@selector(chat) forControlEvents:UIControlEventTouchUpInside];
             [cell.followBtn addTarget:self action:@selector(follow) forControlEvents:UIControlEventTouchUpInside];
             if(self.isfollow){
@@ -122,7 +114,7 @@
                 [cell.followBtn setTitle:@"关注" forState:normal];
             }
         }
-    
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }else{
     
@@ -136,10 +128,21 @@
         cell.indexPath = indexPath;
         cell.model = model;
         cell.delegate = self;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     
     
+}
+#pragma mark - YHRefreshTableViewDelegate
+- (void)refreshTableViewLoadNew:(YHRefreshTableView*)view{
+    [self getTimelinesByUser];
+    //    [self requestDataLoadNew:YES];
+}
+
+- (void)refreshTableViewLoadmore:(YHRefreshTableView*)view{
+    //    [self requestDataLoadNew:NO];
+    [self getOldTimeline];
 }
 
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
@@ -156,7 +159,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     if(indexPath.section == 0){
-        return 280;
+        return 280 + 35;
     }else{
     if (indexPath.row < self.dataArray.count) {
         
@@ -210,45 +213,189 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     //    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    TimelineDetailVC *detailVC = [TimelineDetailVC new];
-    [self.navigationController pushViewController:detailVC animated:YES];
-    detailVC.model = self.dataArray[indexPath.row];
-    
+    if(indexPath.section == 1){
+        TimelineDetailVC *detailVC = [TimelineDetailVC new];
+        [self.navigationController pushViewController:detailVC animated:YES];
+        detailVC.model = self.dataArray[indexPath.row];
+        WeakSelf
+        [detailVC changeModel:^(YHWorkGroup *model) {
+            weakSelf.dataArray[indexPath.row] = model;
+            [weakSelf.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }];
+        [detailVC deleteTimeline:^(YHWorkGroup *model) {
+            [weakSelf.dataArray removeObjectAtIndex:indexPath.row];
+            [weakSelf.heightDict removeObjectForKey:model.dynamicId];
+            [weakSelf.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+        }];
+    }
 }
 
 
 
+//
+//
+//-(void)getTimelineByUser{
+//    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+//    NSString *paramUrl = [@"?account=" stringByAppendingString:self.account];
+//    [[NetworkManager shareNetwork]getPersonalTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+//        NSLog(@"userTimelinelist%@",responseObject);
+//        self.dataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+//        for(int i = 0;i<self.dataArray.count;i++){
+//            //            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
+//            
+//            for(int j = 0;j<self.dataArray[i].images.count;j++){
+//                if(j == 0){
+//                    self.dataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.dataArray[i].images[j]], nil];
+//                }else{
+//                    [self.dataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.dataArray[i].images[j]]];
+//                }
+//                
+//            }
+//            self.dataArray[i].originalPicUrls = self.dataArray[i].thumbnailPicUrls;
+//            
+//            for(int q = 0;q<self.dataArray[i].likes.count;q++){
+//                self.dataArray[i].isLike = NO;
+//                if([self.dataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+//                    self.dataArray[i].isLike = YES;
+//                    break;
+//                }
+//            }
+//            self.dataArray[i].likeCount = [self.dataArray[i].liked intValue];
+//            self.dataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.dataArray[i].comments.count] intValue];
+//            self.dataArray[i].publishTime = [self configTime:self.dataArray[i].publishDate];
+//        }
+//        if(self.dataArray.count>0){
+//            lastTimelineID = self.dataArray[0].dynamicId;
+//        }
+//        [self.tableView reloadData];
+//    } failure:^(NSError *error) {
+//        [SVProgressHUD showErrorWithStatus:@"error"];
+//    }];
+//    
+//
+//}
 
-
--(void)getTimelineByUser{
-
-    NSString *paramUrl = [@"?account=" stringByAppendingString:self.account];
+-(void)getTimelinesByUser{
+    NSString *paramUrlprepre = [@"?account=" stringByAppendingString:self.account];
+    NSString *paramUrlpre = [@"&amount=" stringByAppendingString:amount];
+    NSString *paramUrl;
+    if(since_id){
+        NSString *paramUrl2 = [@"&since_id=" stringByAppendingString:since_id];
+        paramUrl = [paramUrlprepre stringByAppendingString:[paramUrlpre stringByAppendingString:paramUrl2]];
+    }else{
+        paramUrl = [paramUrlprepre stringByAppendingString: paramUrlpre];
+    }
     [[NetworkManager shareNetwork]getPersonalTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
-        NSLog(@"userTimelinelist%@",responseObject);
-        self.dataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-        for(int i = 0;i<self.dataArray.count;i++){
+        NSLog(@"getPersonalTimelines%@",responseObject);
+        
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+        
+        self.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+        for(int i = 0;i<self.newdataArray.count;i++){
             //            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
             
-            for(int j = 0;j<self.dataArray[i].images.count;j++){
+            for(int j = 0;j<self.newdataArray[i].images.count;j++){
                 if(j == 0){
-                    self.dataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.dataArray[i].images[j]], nil];
+                    self.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.newdataArray[i].images[j]], nil];
                 }else{
-                    [self.dataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.dataArray[i].images[j]]];
+                    [self.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.newdataArray[i].images[j]]];
                 }
                 
             }
-            self.dataArray[i].originalPicUrls = self.dataArray[i].thumbnailPicUrls;
+            self.newdataArray[i].originalPicUrls = self.newdataArray[i].thumbnailPicUrls;
+            
+            for(int q = 0;q<self.newdataArray[i].likes.count;q++){
+                self.newdataArray[i].isLike = NO;
+                if([self.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                    self.newdataArray[i].isLike = YES;
+                    break;
+                }
+            }
+            self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
+            self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
+            self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
         }
+        
         if(self.dataArray.count>0){
-            lastTimelineID = self.dataArray[0].dynamicId;
+            //            self.dataArray = [NSMutableArray arrayWithObjects:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray], nil];
+            self.dataArray = [NSMutableArray arrayWithArray:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray]];
+            
+            
+        }else{
+            self.dataArray = self.newdataArray;
+            
         }
+        
+        if(self.dataArray.count>0){
+            since_id = self.dataArray[0].dynamicId;
+            lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+            
+        }
+        self.newdataArray = nil;
         [self.tableView reloadData];
+        [self.tableView loadFinish:YHRefreshType_LoadNew];
+        
     } failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:@"error"];
+        
     }];
-    
-
 }
+
+-(void)getOldTimeline{
+    NSString *paramUrlprepre = [@"?account=" stringByAppendingString:self.account];
+    NSString *paramUrlpre = [@"&amount=" stringByAppendingString:amount];
+    NSString *paramUrl;
+    if(lastTimelineID){
+        
+        NSString *paramUrl2 = [paramUrlpre stringByAppendingString:[@"&lastTimelineID=" stringByAppendingString:lastTimelineID]];
+        paramUrl = [paramUrlprepre stringByAppendingString:paramUrl2];
+        
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+        
+        [[NetworkManager shareNetwork]getPersonalTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+            NSLog(@"getPersonaloldTimeline%@",responseObject);
+            self.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+            for(int i = 0;i<self.newdataArray.count;i++){
+                for(int j = 0;j<self.newdataArray[i].images.count;j++){
+                    if(j == 0){
+                        self.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.newdataArray[i].images[j]], nil];
+                    }else{
+                        [self.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.newdataArray[i].images[j]]];
+                    }
+                    
+                }
+                self.newdataArray[i].originalPicUrls = self.newdataArray[i].thumbnailPicUrls;
+                
+                
+                for(int q = 0;q<self.newdataArray[i].likes.count;q++){
+                    self.newdataArray[i].isLike = NO;
+                    if([self.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                        self.newdataArray[i].isLike = YES;
+                        break;
+                    }
+                }
+                self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
+                self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
+                self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
+            }
+            
+            if(self.dataArray){
+                self.dataArray = [NSMutableArray arrayWithArray:[self.dataArray arrayByAddingObjectsFromArray:self.newdataArray]];
+            }else{
+                self.dataArray = self.newdataArray;
+            }
+            if(self.dataArray){
+                lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+            }
+            self.newdataArray = nil;
+            
+            [self.tableView loadFinish:YHRefreshType_LoadMore];
+            [self.tableView reloadData];
+        } failure:^(NSError *error) {
+            
+        }];
+    }
+}
+
 
 -(void)getUserinfoByUser{
     
@@ -305,6 +452,18 @@
     chat.title = self.userinfo.name;
     //显示聊天会话界面
     [self.navigationController pushViewController:chat animated:YES];
+}
+
+-(NSString *)configTime:(long)timestamp{
+    
+    NSString*tempTime =[[NSNumber numberWithLong:timestamp] stringValue];
+    NSMutableString *getTime = [NSMutableString stringWithFormat:@"%@",tempTime];
+    [getTime deleteCharactersInRange:NSMakeRange(10,3)];
+    NSDateFormatter *matter = [[NSDateFormatter alloc]init];
+    matter.dateFormat =@"YY-MM-dd HH:mm";
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[getTime intValue]];
+    NSString *timeStr = [matter stringFromDate:date];
+    return timeStr;
 }
 
 @end

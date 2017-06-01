@@ -137,6 +137,7 @@
     cell.indexPath = indexPath;
     cell.model = model;
     cell.delegate = self;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
     
     
@@ -201,6 +202,16 @@
     TimelineDetailVC *detailVC = [TimelineDetailVC new];
     [self.navigationController pushViewController:detailVC animated:YES];
     detailVC.model = self.dataArray[indexPath.row];
+    WeakSelf
+    [detailVC changeModel:^(YHWorkGroup *model) {
+        weakSelf.dataArray[indexPath.row] = model;
+        [weakSelf.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    }];
+    [detailVC deleteTimeline:^(YHWorkGroup *model) {
+        [weakSelf.dataArray removeObjectAtIndex:indexPath.row];
+        [weakSelf.heightDict removeObjectForKey:model.dynamicId];
+        [weakSelf.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+    }];
     
 }
 
@@ -728,13 +739,6 @@
 
 -(NSString *)configTime:(long)timestamp{
 
-//    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-//    [formatter setDateStyle:NSDateFormatterMediumStyle];
-//    [formatter setTimeStyle:NSDateFormatterShortStyle];
-//    [formatter setDateFormat:@"yyyy-MM-dd HH:MM:ss"];//@"yyyy-MM-dd-HHMMss"
-//    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[timestamp doubleValue]];
-//    NSString *dateString = [formatter stringFromDate:date];
-//    return dateString;
     NSString*tempTime =[[NSNumber numberWithLong:timestamp] stringValue];
     NSMutableString *getTime = [NSMutableString stringWithFormat:@"%@",tempTime];
     [getTime deleteCharactersInRange:NSMakeRange(10,3)];

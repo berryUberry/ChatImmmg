@@ -23,9 +23,11 @@
 @property (nonatomic,strong) NSMutableDictionary *heightDict;
 
 @property (nonatomic,strong) CommentView *commentView;
-@property (nonatomic , strong)UITapGestureRecognizer *gesture;
+@property (nonatomic ,strong) UITapGestureRecognizer *gesture;
 
 @property (nonatomic,strong) NSMutableArray<NSString *> *commentCellheights;
+@property (nonatomic,copy) ChangeBlock changeModelBlock;
+@property (nonatomic,copy) DeleteModelBlock deleteModelBlock;
 
 //@property(nonatomic,strong) NSMutableArray<TimelineCommentModel *> *comments;
 
@@ -77,18 +79,18 @@
 -(void)initUI{
     self.title = @"动态详情";
     
-    //设置导航栏背景颜色
-    UIColor * color = [UIColor colorWithRed:0.f green:191.f / 255 blue:143.f / 255 alpha:1];
-    self.navigationController.navigationBar.barTintColor = color;
-    self.navigationController.navigationBar.translucent = NO;
-    
-    NSShadow *shadow = [[NSShadow alloc]init];
-    shadow.shadowColor = [UIColor colorWithWhite:0.871 alpha:1.000];
-    shadow.shadowOffset = CGSizeMake(0.5, 0.5);
-    
-    //设置导航栏标题颜色
-    NSDictionary *attributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:18],NSShadowAttributeName:shadow};
-    self.navigationController.navigationBar.titleTextAttributes = attributes;
+//    //设置导航栏背景颜色
+//    UIColor * color = [UIColor colorWithRed:0.f green:191.f / 255 blue:143.f / 255 alpha:1];
+//    self.navigationController.navigationBar.barTintColor = color;
+//    self.navigationController.navigationBar.translucent = NO;
+//    
+//    NSShadow *shadow = [[NSShadow alloc]init];
+//    shadow.shadowColor = [UIColor colorWithWhite:0.871 alpha:1.000];
+//    shadow.shadowOffset = CGSizeMake(0.5, 0.5);
+//    
+//    //设置导航栏标题颜色
+//    NSDictionary *attributes = @{NSForegroundColorAttributeName:[UIColor whiteColor],NSFontAttributeName:[UIFont systemFontOfSize:18],NSShadowAttributeName:shadow};
+//    self.navigationController.navigationBar.titleTextAttributes = attributes;
     
     
     self.tableView = [[YHRefreshTableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64) style:UITableViewStylePlain];
@@ -459,14 +461,41 @@
 
 
 -(void)getDetailTimeline{
-    
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
     NSString *paramUrl = [@"?timelineID=" stringByAppendingString:self.model.dynamicId];
+    WeakSelf
     [[NetworkManager shareNetwork]getDetailTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"detailTimeline%@",responseObject);
-        self.model = [YHWorkGroup mj_objectWithKeyValues:[responseObject objectForKey:@"result"]];
-        self.commentCellheights = nil;
-        [self calcCommentCellHeights];
-        [self.tableView reloadData];
+        weakSelf.model = [YHWorkGroup mj_objectWithKeyValues:[responseObject objectForKey:@"result"]];
+        
+        
+        for(int j = 0;j<weakSelf.model.images.count;j++){
+            if(j == 0){
+                weakSelf.model.thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:weakSelf.model.images[j]], nil];
+            }else{
+                [weakSelf.model.thumbnailPicUrls addObject:[NSURL URLWithString: weakSelf.model.images[j]]];
+            }
+            
+        }
+        weakSelf.model.originalPicUrls = weakSelf.model.thumbnailPicUrls;
+        
+        for(int q = 0;q<weakSelf.model.likes.count;q++){
+            weakSelf.model.isLike = NO;
+            if([weakSelf.model.likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                weakSelf.model.isLike = YES;
+                break;
+            }
+        }
+        weakSelf.model.likeCount = [weakSelf.model.liked intValue];
+        weakSelf.model.commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)weakSelf.model.comments.count] intValue];
+        weakSelf.model.publishTime = [weakSelf configTime:weakSelf.model.publishDate];
+
+        weakSelf.commentCellheights = nil;
+        [weakSelf calcCommentCellHeights];
+        [weakSelf.tableView reloadData];
+        if(self.changeModelBlock){
+            self.changeModelBlock(weakSelf.model);
+        }
         [SVProgressHUD dismiss];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"error"];
@@ -498,11 +527,56 @@
         }
     }];
 
+}
+
+-(NSString *)configTime:(long)timestamp{
     
-    
-    
-    
+    NSString*tempTime =[[NSNumber numberWithLong:timestamp] stringValue];
+    NSMutableString *getTime = [NSMutableString stringWithFormat:@"%@",tempTime];
+    [getTime deleteCharactersInRange:NSMakeRange(10,3)];
+    NSDateFormatter *matter = [[NSDateFormatter alloc]init];
+    matter.dateFormat =@"YY-MM-dd HH:mm";
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[getTime intValue]];
+    NSString *timeStr = [matter stringFromDate:date];
+    return timeStr;
+}
+
+
+- (void)onDeleteInCell:(CellForWorkGroup *)cell{
+    WeakSelf
+    [YHUtils showAlertWithTitle:@"删除动态" message:@"您确定要删除此动态?" okTitle:@"确定" cancelTitle:@"取消" inViewController:self dismiss:^(BOOL resultYes) {
+        
+        if (resultYes)
+        {
+            NSDictionary *params = @{@"timelineID":weakSelf.model.dynamicId
+                                     };
+            [[NetworkManager shareNetwork]deleteTimelineWithParam:params successful:^(NSDictionary *responseObject) {
+                NSLog(@"deleteTimeline%@",responseObject);
+                if([responseObject objectForKey:@"success"]){
+                    [SVProgressHUD showSuccessWithStatus:@"删除成功！"];
+                    if(self.deleteModelBlock){
+                        self.deleteModelBlock(weakSelf.model);
+                    }
+                    [self.navigationController popViewControllerAnimated:YES];
+                }else{
+                    [SVProgressHUD showInfoWithStatus:@"删除失败！"];
+                }
+                
+                
+            } failure:^(NSError *error) {
+                [SVProgressHUD showInfoWithStatus:@"error"];
+            }];
+            
+        }
+    }];
 
 }
 
+#pragma mark - 与动态列表界面交互的block
+-(void)changeModel:(ChangeBlock)disblock{
+    self.changeModelBlock = disblock;
+}
+-(void)deleteTimeline:(DeleteModelBlock)disBlock{
+    self.deleteModelBlock = disBlock;
+}
 @end

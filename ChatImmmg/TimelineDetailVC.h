@@ -9,8 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "YHWorkGroup.h"
 
+typedef void(^ChangeBlock)(YHWorkGroup *);
+typedef void (^DeleteModelBlock)(YHWorkGroup *);
+
 @interface TimelineDetailVC : UIViewController
 
 @property (nonatomic,strong) YHWorkGroup *model;
+
+-(void)changeModel:(ChangeBlock)disblock;
+-(void)deleteTimeline:(DeleteModelBlock)disBlock;
 
 @end

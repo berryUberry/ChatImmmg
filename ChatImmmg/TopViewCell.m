@@ -10,6 +10,7 @@
 @interface TopViewCell()
 @property(nonatomic,strong)UIImageView *headImg;
 @property(nonatomic,strong)UILabel *name;
+@property(nonatomic,strong)UILabel *mottoLabel;
 @end
 @implementation TopViewCell
 
@@ -37,6 +38,8 @@
     
     UIImageView *headImg = [UIImageView new];
     headImg.image = [UIImage imageNamed:@"common_avatar_120px"];
+    headImg.layer.cornerRadius = 6;
+    headImg.layer.masksToBounds = YES;
     self.headImg = headImg;
     [self addSubview:self.headImg];
     
@@ -62,7 +65,11 @@
     chatBtn.backgroundColor = [UIColor colorWithRed:51/255.0 green:161/255.0 blue:201/255.0 alpha:1.0] ;
     [self addSubview:self.chatBtn];
     
-    
+    UILabel *mottoLabel = [UILabel new];
+    mottoLabel.textColor = [UIColor grayColor];
+    mottoLabel.font = [UIFont systemFontOfSize:12.0];
+    self.mottoLabel = mottoLabel;
+    [self addSubview:self.mottoLabel];
     
     
     [backgroundImg mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -80,12 +87,12 @@
     [name mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(headImg.mas_bottom).offset(5);
         make.left.equalTo(headImg.mas_left);
-        make.width.mas_equalTo(150);
+        make.width.mas_equalTo(300);
         make.height.mas_equalTo(30);
     }];
     
     [chatBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(name.mas_top).offset(-10);
+        make.top.equalTo(name.mas_top).offset(-32);
         make.right.mas_equalTo(-20);
         make.width.mas_equalTo(60);
         make.height.mas_equalTo(30);
@@ -97,9 +104,16 @@
         make.width.mas_equalTo(60);
         make.height.mas_equalTo(30);
     }];
+    
+    [mottoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(name.mas_bottom).offset(2);
+        make.left.equalTo(name.mas_left);
+        make.width.mas_equalTo(300);
+        make.height.mas_equalTo(30);
+    }];
 }
 
--(void)configModel:(NSString *)headUrl name:(NSString *)name isHide:(NSString *)ishide{
+-(void)configModel:(NSString *)headUrl name:(NSString *)name isHide:(NSString *)ishide motto:(NSString *)motto{
     if(headUrl){
         [self.headImg sd_setImageWithURL:[NSURL URLWithString:headUrl]];
     }
@@ -111,6 +125,7 @@
         self.followBtn.hidden = NO;
         self.chatBtn.hidden = NO;
     }
+    self.mottoLabel.text = motto;
 }
 
 @end

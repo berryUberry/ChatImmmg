@@ -11,5 +11,5 @@
 @interface TopViewCell : UITableViewCell
 @property(nonatomic,strong)UIButton *followBtn;
 @property(nonatomic,strong)UIButton *chatBtn;
--(void)configModel:(NSString *)headUrl name:(NSString *)name isHide:(NSString *)ishide;
+-(void)configModel:(NSString *)headUrl name:(NSString *)name isHide:(NSString *)ishide motto:(NSString *)motto;
 @end

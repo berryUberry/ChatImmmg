@@ -59,7 +59,7 @@ const CGFloat moreBtnWidth    = 60;
 - (void)setup{
     
     self.imgvAvatar = [UIImageView new];
-    self.imgvAvatar.layer.cornerRadius = 22.5;
+    self.imgvAvatar.layer.cornerRadius = 6;
     self.imgvAvatar.layer.masksToBounds = YES;
     self.imgvAvatar.userInteractionEnabled = YES;
     UITapGestureRecognizer *tapGuesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAvatar:)];
