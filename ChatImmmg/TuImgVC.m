@@ -23,6 +23,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    // 启动GPS，图片中会包含对应的地理位置的信息
+    [[TuSDKTKLocation shared] requireAuthorWithController:self];
+    [TuSDK checkManagerWithDelegate:self];
+    
+    // 用户可以通过打印字段的方式获取到正在使用的 SDK 的版本号
+    NSLog(@"版本号 : %@",lsqSDKVersion);
+    
+    [self setupUI];
+}
+
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+
+-(void)setupUI{
     
     //设置导航栏背景颜色
     UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
@@ -38,31 +59,28 @@
     self.navigationController.navigationBar.titleTextAttributes = attributes;
     
     
+    UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - 100, 200, 200, 100)];
     
-    // 启动GPS，图片中会包含对应的地理位置的信息
-    [[TuSDKTKLocation shared] requireAuthorWithController:self];
-    [TuSDK checkManagerWithDelegate:self];
-    
-    // 用户可以通过打印字段的方式获取到正在使用的 SDK 的版本号
-    NSLog(@"版本号 : %@",lsqSDKVersion);
-    
-    UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
-    
-    button.backgroundColor = [UIColor redColor];
+    button.backgroundColor = [UIColor colorWithRed:64/255.0f green:224/255.0f blue:208/255.0f alpha:1];
     [button addTarget:self action:@selector(album) forControlEvents:UIControlEventTouchUpInside];
+    button.layer.cornerRadius = 10;
+    button.layer.masksToBounds = YES;
+    [button setTitle:@"相 册" forState:normal];
     [self.view addSubview:button];
     
-    UIButton *camerabtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 200, 100, 100)];
-    camerabtn.backgroundColor = [UIColor blueColor];
+    UIButton *camerabtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - 100, 350, 200, 100)];
+    camerabtn.backgroundColor = [UIColor colorWithRed:135/255.0f green:206/255.0f blue:235/255.0f alpha:1];
     [camerabtn addTarget:self action:@selector(camera) forControlEvents:UIControlEventTouchUpInside];
+    camerabtn.layer.cornerRadius = 10;
+    camerabtn.layer.masksToBounds = YES;
+    [camerabtn setTitle:@"相 机" forState:normal];
     [self.view addSubview:camerabtn];
+
+
 }
 
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+
 
 - (void)onTuSDKFilterManagerInited:(TuSDKFilterManager *)manager;
 {

@@ -14,6 +14,7 @@
 @interface LoginVC ()<RCIMUserInfoDataSource>
 @property(nonatomic , strong)LoginView *loginView;
 @property(nonatomic,strong)UserInfo *info;
+@property (nonatomic ,strong) UITapGestureRecognizer *gesture;
 
 @end
 
@@ -25,8 +26,17 @@
     LoginView *loginView = [[LoginView alloc]initWithFrame:self.view.frame];
     [self.view addSubview:loginView];
     self.loginView = loginView;
+    self.loginView.scrollView.scrollEnabled = NO;
     [loginView.loginButton addTarget:self action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
     [loginView.labelButton addTarget:self action:@selector(labelAction) forControlEvents:UIControlEventTouchUpInside];
+
+    self.gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
+    self.gesture.numberOfTapsRequired = 1;//手势敲击的次数
+    [self.view addGestureRecognizer:self.gesture];
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    self.view.hidden = YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -37,6 +47,15 @@
 
 -(void)loginAction{
     if([_loginView.loginButton.titleLabel.text  isEqual: @"登陆"]){
+    
+        if([self.loginView.scrollView getLoginAccount].length == 0){
+            [SVProgressHUD showInfoWithStatus:@"账号不能为空"];
+            return;
+        }
+        if([self.loginView.scrollView getLoginPassword].length == 0){
+            [SVProgressHUD showInfoWithStatus:@"密码不能为空"];
+            return;
+        }
         NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
         NSDictionary *params = @{@"account":[self.loginView.scrollView getLoginAccount],
                                  @"password":[self.loginView.scrollView getLoginPassword]
@@ -83,13 +102,47 @@
 
         }];
     }else{
+        
+        if([self.loginView.scrollView getRegisterAccount].length > 15){
+            [SVProgressHUD showInfoWithStatus:@"注册账号超过15个字"];
+            return;
+        }
+        if([self.loginView.scrollView getRegisterPassword].length > 15){
+            [SVProgressHUD showInfoWithStatus:@"注册密码超过15个字"];
+            return;
+        }
+        if([self.loginView.scrollView getRegisterName].length > 15){
+            [SVProgressHUD showInfoWithStatus:@"注册昵称超过15个字"];
+            return;
+        }
+        if([self.loginView.scrollView getRegisterAccount].length == 0){
+            [SVProgressHUD showInfoWithStatus:@"注册账号不能为空"];
+            return;
+        }
+        if([self.loginView.scrollView getRegisterName].length == 0){
+            [SVProgressHUD showInfoWithStatus:@"注册昵称不能为空"];
+            return;
+        }
+        if([self.loginView.scrollView getRegisterPassword].length == 0){
+            [SVProgressHUD showInfoWithStatus:@"注册密码不能为空"];
+            return;
+        }
+        
+            
         NSDictionary *params = @{@"account":[self.loginView.scrollView getRegisterAccount],
                                  @"password":[self.loginView.scrollView getRegisterPassword],
                                  @"name":[self.loginView.scrollView getRegisterName]
                                  };
         [[NetworkManager shareNetwork] registerWithParam:params successful:^(NSDictionary *responseObject) {
             NSLog(@"%@", responseObject);
-            [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+            if([responseObject objectForKey:@"error"]){
+                [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
+            }else{
+                [SVProgressHUD showSuccessWithStatus:@"注册成功"];
+                self.loginView.scrollView.accountA.text = @"";
+                self.loginView.scrollView.passwordA.text = @"";
+                self.loginView.scrollView.username.text = @"";
+            }
         } failure:^(NSError *error) {
             [SVProgressHUD showErrorWithStatus:@"error"];
         }];
@@ -142,6 +195,16 @@
         [SVProgressHUD showErrorWithStatus:@"error"];
     }];
 }
+
+//隐藏键盘方法
+-(void)hideKeyboard{
+    [self.loginView.scrollView.account resignFirstResponder];
+    [self.loginView.scrollView.password resignFirstResponder];
+    [self.loginView.scrollView.accountA resignFirstResponder];
+    [self.loginView.scrollView.passwordA resignFirstResponder];
+    [self.loginView.scrollView.username resignFirstResponder];
+}
+
 
 
 

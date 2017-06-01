@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7BE1828DDAB76312F415BED6 /* libPods-ChatImmmg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99A62C544458F4C94C535884 /* libPods-ChatImmmg.a */; };
+		D510D4641EE0251B00CD58B4 /* ChangeInfoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D510D4631EE0251B00CD58B4 /* ChangeInfoVC.m */; };
 		D53F18CC1ED6AE290041E05F /* CommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D53F18CB1ED6AE290041E05F /* CommentView.m */; };
 		D53F18D01ED6C33F0041E05F /* TimelineCommentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D53F18CF1ED6C33F0041E05F /* TimelineCommentModel.m */; };
 		D53F18D31ED6C5870041E05F /* CommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D53F18D21ED6C5870041E05F /* CommentCell.m */; };
@@ -167,6 +168,8 @@
 /* Begin PBXFileReference section */
 		99A62C544458F4C94C535884 /* libPods-ChatImmmg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ChatImmmg.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E58BE06826C7B2867607EEE /* Pods-ChatImmmg.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatImmmg.release.xcconfig"; path = "Pods/Target Support Files/Pods-ChatImmmg/Pods-ChatImmmg.release.xcconfig"; sourceTree = "<group>"; };
+		D510D4621EE0251B00CD58B4 /* ChangeInfoVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeInfoVC.h; sourceTree = "<group>"; };
+		D510D4631EE0251B00CD58B4 /* ChangeInfoVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeInfoVC.m; sourceTree = "<group>"; };
 		D53F18CA1ED6AE290041E05F /* CommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentView.h; sourceTree = "<group>"; };
 		D53F18CB1ED6AE290041E05F /* CommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentView.m; sourceTree = "<group>"; };
 		D53F18CE1ED6C33F0041E05F /* TimelineCommentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineCommentModel.h; sourceTree = "<group>"; };
@@ -547,6 +550,8 @@
 				D57B0A001ED1A51700F25EBE /* MineVC.m */,
 				D57B0A0B1ED1C8F800F25EBE /* ChangeVC.h */,
 				D57B0A0C1ED1C8F800F25EBE /* ChangeVC.m */,
+				D510D4621EE0251B00CD58B4 /* ChangeInfoVC.h */,
+				D510D4631EE0251B00CD58B4 /* ChangeInfoVC.m */,
 			);
 			name = C;
 			sourceTree = "<group>";
@@ -1330,6 +1335,7 @@
 				D53F18D31ED6C5870041E05F /* CommentCell.m in Sources */,
 				D57B09FB1ED17F1000F25EBE /* NSObject+MJCoding.m in Sources */,
 				D5D052E61ECB10CA00981048 /* YHWorkExperienceModel.m in Sources */,
+				D510D4641EE0251B00CD58B4 /* ChangeInfoVC.m in Sources */,
 				D5D95B081EAB1D5200E32672 /* ScrollView.m in Sources */,
 				D5838C741ED95EE4006C033C /* TopViewCell.m in Sources */,
 				D5D0535C1ECC28A400981048 /* HXCameraViewController.m in Sources */,

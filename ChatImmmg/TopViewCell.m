@@ -45,7 +45,7 @@
     
     UILabel *name = [UILabel new];
     self.name = name;
-    name.font = [UIFont fontWithName:@"Helvetica-Bold" size:24.0];
+    name.font = [UIFont fontWithName:@"Helvetica-Bold" size:20.0];
     [self addSubview:self.name];
     
     UIButton *followBtn = [UIButton new];
@@ -68,6 +68,7 @@
     UILabel *mottoLabel = [UILabel new];
     mottoLabel.textColor = [UIColor grayColor];
     mottoLabel.font = [UIFont systemFontOfSize:12.0];
+    mottoLabel.numberOfLines = 0;
     self.mottoLabel = mottoLabel;
     [self addSubview:self.mottoLabel];
     
@@ -80,7 +81,7 @@
     
     [headImg mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(backgroundImg.mas_bottom).offset(-40);
-        make.left.mas_equalTo(40);
+        make.left.mas_equalTo(20);
         make.width.height.mas_equalTo(80);
     }];
     

@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+typedef void (^AddTimelineBlock)();
 @interface AddTimelineVC : UIViewController
+
+-(void)addSuccess:(AddTimelineBlock)disblock;
 
 @end

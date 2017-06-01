@@ -230,6 +230,40 @@
     }
 }
 
+#pragma mark - CellForWorkGroupDelegate
+- (void)onAvatarInCell:(CellForWorkGroup *)cell{
+}
+
+- (void)onMoreInCell:(CellForWorkGroup *)cell{
+    DDLog(@"查看详情");
+    if (cell.indexPath.row < [self.dataArray count]) {
+        YHWorkGroup *model = self.dataArray[cell.indexPath.row];
+        model.isOpening = !model.isOpening;
+        [self.tableView reloadRowsAtIndexPaths:@[cell.indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    }
+    
+}
+
+- (void)onCommentInCell:(CellForWorkGroup *)cell{
+    TimelineDetailVC *detailVC = [TimelineDetailVC new];
+    [self.navigationController pushViewController:detailVC animated:YES];
+    detailVC.model = cell.model;
+}
+
+- (void)onLikeInCell:(CellForWorkGroup *)cell{
+    [self thumbHttp:cell];
+    
+}
+
+- (void)onShareInCell:(CellForWorkGroup *)cell{
+}
+
+
+- (void)onDeleteInCell:(CellForWorkGroup *)cell{
+    if (cell.indexPath.row < [self.dataArray count]) {
+        [self _deleteDynAtIndexPath:cell.indexPath dynamicId:cell.model.dynamicId];
+    }
+}
 
 
 //
@@ -274,6 +308,10 @@
 //    
 //
 //}
+
+
+
+
 
 -(void)getTimelinesByUser{
     NSString *paramUrlprepre = [@"?account=" stringByAppendingString:self.account];
@@ -378,12 +416,12 @@
                 self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
             }
             
-            if(self.dataArray){
+            if(self.dataArray.count>0){
                 self.dataArray = [NSMutableArray arrayWithArray:[self.dataArray arrayByAddingObjectsFromArray:self.newdataArray]];
             }else{
                 self.dataArray = self.newdataArray;
             }
-            if(self.dataArray){
+            if(self.dataArray.count>0){
                 lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
             }
             self.newdataArray = nil;
@@ -393,6 +431,8 @@
         } failure:^(NSError *error) {
             
         }];
+    }else{
+        [self getTimelinesByUser];
     }
 }
 
@@ -412,6 +452,83 @@
         [self.tableView reloadData];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
+    
+}
+
+
+
+
+#pragma mark - private
+
+-(void)thumbHttp:(CellForWorkGroup *)cell{
+    NSDictionary *params = @{@"timelineID":cell.model.dynamicId
+                             };
+    [[NetworkManager shareNetwork]thumbUpTimelineWithParam:params successful:^(NSDictionary *responseObject) {
+        NSLog(@"thumbUp%@",responseObject);
+        if([responseObject objectForKey:@"success"]){
+            if (cell.indexPath.row < [self.dataArray count]) {
+                YHWorkGroup *model = self.dataArray[cell.indexPath.row];
+                
+                BOOL isLike = !model.isLike;
+                
+                model.isLike = isLike;
+                if (isLike) {
+                    model.likeCount += 1;
+                    
+                }else{
+                    model.likeCount -= 1;
+                }
+                
+                [self.tableView reloadRowsAtIndexPaths:@[cell.indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            }
+        }
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
+}
+
+
+- (void)_deleteDynAtIndexPath:(NSIndexPath *)indexPath dynamicId:(NSString *)dynamicId{
+    
+    WeakSelf
+    [YHUtils showAlertWithTitle:@"删除动态" message:@"您确定要删除此动态?" okTitle:@"确定" cancelTitle:@"取消" inViewController:self dismiss:^(BOOL resultYes) {
+        
+        if (resultYes)
+        {
+            
+            DDLog(@"delete row is %ld",(long)indexPath.row);
+            
+            
+            NSDictionary *params = @{@"timelineID":dynamicId
+                                     };
+            [[NetworkManager shareNetwork]deleteTimelineWithParam:params successful:^(NSDictionary *responseObject) {
+                NSLog(@"deleteTimeline%@",responseObject);
+                if([responseObject objectForKey:@"success"]){
+                    [weakSelf.dataArray removeObjectAtIndex:indexPath.row];
+                    [weakSelf.heightDict removeObjectForKey:dynamicId];
+                    [weakSelf.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+                    if(self.dataArray.count>0){
+                        lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+                    }else{
+                        lastTimelineID = nil;
+                        since_id = nil;
+                    }
+                    
+                }else{
+                    [SVProgressHUD showInfoWithStatus:@"删除失败！"];
+                }
+                
+                
+            } failure:^(NSError *error) {
+                [SVProgressHUD showInfoWithStatus:@"error"];
+            }];
+            
+            
+            
+            
+        }
     }];
     
 }

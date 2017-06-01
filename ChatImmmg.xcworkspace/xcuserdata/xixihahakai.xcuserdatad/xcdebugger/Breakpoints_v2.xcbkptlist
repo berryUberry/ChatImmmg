@@ -23,22 +23,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ChatImmmg/LoginVC.m"
-            timestampString = "517723851.364572"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
-            landmarkName = "-getUserInfoWithUserId:completion:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "ChatImmmg/FollowersVC.m"
             timestampString = "517910573.214893"
             startingColumnNumber = "9223372036854775807"
@@ -56,12 +40,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ChatImmmg/UserMainPageVC.m"
-            timestampString = "517988951.65444"
+            timestampString = "517992271.158168"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "144"
-            endingLineNumber = "144"
-            landmarkName = "-refreshTableViewLoadmore:"
+            startingLineNumber = "435"
+            endingLineNumber = "435"
+            landmarkName = "-getOldTimeline"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

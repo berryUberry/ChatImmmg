@@ -10,12 +10,12 @@
 #import <Masonry/Masonry.h>
 
 @interface ScrollView()
-@property(nonatomic,strong) UITextField *account;
-@property(nonatomic,strong) UITextField *password;
-@property(nonatomic,strong) UITextField *accountA;
-@property(nonatomic,strong) UITextField *passwordA;
-@property(nonatomic,strong) UITextField *username;
-
+//@property(nonatomic,strong) UITextField *account;
+//@property(nonatomic,strong) UITextField *password;
+//@property(nonatomic,strong) UITextField *accountA;
+//@property(nonatomic,strong) UITextField *passwordA;
+//@property(nonatomic,strong) UITextField *username;
+//
 
 @end
 @implementation ScrollView

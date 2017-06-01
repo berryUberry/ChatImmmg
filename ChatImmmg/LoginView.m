@@ -54,7 +54,7 @@
     scrollView.contentSize = CGSizeMake((self.frame.size.width)*2, 85);
     
     UIButton *loginButton = [UIButton new];
-    loginButton.backgroundColor = [UIColor blueColor];
+    loginButton.backgroundColor = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];;
     loginButton.layer.cornerRadius = 5;
     [loginButton setTitle:@"登陆" forState:UIControlStateNormal];
     [self addSubview:loginButton];

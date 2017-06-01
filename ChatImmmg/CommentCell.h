@@ -8,7 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "TimelineCommentModel.h"
-
+@class CommentCell;
+@protocol CommentCellDelegate <NSObject>
+-(void)gotoMainPage:(CommentCell *)commentcell;
+@end
 @interface CommentCell : UITableViewCell
+@property(nonatomic,strong) TimelineCommentModel *model;
+@property (weak,nonatomic) id<CommentCellDelegate>delegate;
 -(void)configModel:(TimelineCommentModel *)model;
 @end

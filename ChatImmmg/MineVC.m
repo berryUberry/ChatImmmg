@@ -11,6 +11,7 @@
 #import "MineBaseCell.h"
 #import "ExitCell.h"
 #import "ChangeVC.h"
+#import "ChangeInfoVC.h"
 #import "UserMainPageVC.h"
 #import "FollowersVC.h"
 #import "LoginVC.h"
@@ -104,15 +105,25 @@ static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
         
         }
         else if(indexPath.row == 1){
-            ChangeVC *changeVC = [[ChangeVC alloc]init];
-            [self presentViewController:changeVC animated:YES completion:nil];
-            changeVC.type = @"name";
-            changeVC.text.text = [userdefault objectForKey:@"name"];
+//            ChangeVC *changeVC = [[ChangeVC alloc]init];
+//            [self presentViewController:changeVC animated:YES completion:nil];
+//            changeVC.type = @"name";
+//            changeVC.text.text = [userdefault objectForKey:@"name"];
+            ChangeInfoVC *changeInfoVC = [[ChangeInfoVC alloc]init];
+            
+            changeInfoVC.type = @"name";
+            changeInfoVC.text.text = [userdefault objectForKey:@"name"];
+            [self.navigationController pushViewController:changeInfoVC animated:YES];
         }else if(indexPath.row == 3){
-            ChangeVC *changeVC = [ChangeVC new];
-            [self presentViewController:changeVC animated:YES completion:nil];
-            changeVC.type = @"motto";
-            changeVC.text.text = [userdefault objectForKey:@"motto"];
+//            ChangeVC *changeVC = [ChangeVC new];
+//            [self presentViewController:changeVC animated:YES completion:nil];
+//            changeVC.type = @"motto";
+//            changeVC.text.text = [userdefault objectForKey:@"motto"];
+            ChangeInfoVC *changeInfoVC = [ChangeInfoVC new];
+            changeInfoVC.type = @"motto";
+            [self.navigationController pushViewController:changeInfoVC animated:YES];
+            changeInfoVC.text.text = [userdefault objectForKey:@"motto"];
+
         }
     }else{
         if(indexPath.row == 0){

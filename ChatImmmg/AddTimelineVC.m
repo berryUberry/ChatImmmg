@@ -18,6 +18,7 @@
 @property(nonatomic,strong) NSMutableArray<NSString *> *imageUrls;
 
 @property(nonatomic,strong) UITextView *contentTextView;
+@property (nonatomic,copy) AddTimelineBlock addTimelineBlock;
 @end
 
 @implementation AddTimelineVC
@@ -30,6 +31,11 @@
         //_manager.outerCamera = YES;
     }
     return _manager;
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    self.tabBarController.tabBar.hidden = YES;
+    
 }
 
 - (void)viewDidLoad {
@@ -54,7 +60,7 @@
     
     UIScrollView *scrollView = [UIScrollView new];
     scrollView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-    scrollView.backgroundColor = [UIColor redColor];
+    scrollView.backgroundColor = [UIColor colorWithRed:176/255.0f green:224/255.0f blue:230/255.0f alpha:1];
     [self.view addSubview:scrollView];
     
     UITextView *contentTextView = [UITextView new];
@@ -296,6 +302,9 @@
             [self.navigationController popViewControllerAnimated:YES];
             [SVProgressHUD dismiss];
             [SVProgressHUD showSuccessWithStatus:@"发布成功！"];
+            if(self.addTimelineBlock){
+                self.addTimelineBlock();
+            }
         }else{
             [SVProgressHUD showInfoWithStatus:@"发布失败！"];
         }
@@ -305,5 +314,8 @@
     
 }
 
+-(void)addSuccess:(AddTimelineBlock)disblock{
+    self.addTimelineBlock = disblock;
+}
 
 @end

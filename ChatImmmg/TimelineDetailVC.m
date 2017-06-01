@@ -16,8 +16,9 @@
 #import "CommentView.h"
 #import "CommentCell.h"
 #import "TimelineCommentModel.h"
+#import "UserMainPageVC.h"
 
-@interface TimelineDetailVC ()<UITableViewDelegate,UITableViewDataSource,CellForWorkGroupDelegate,UITextViewDelegate>
+@interface TimelineDetailVC ()<UITableViewDelegate,UITableViewDataSource,CellForWorkGroupDelegate,UITextViewDelegate,CommentCellDelegate>
 
 @property (nonatomic,strong) YHRefreshTableView *tableView;
 @property (nonatomic,strong) NSMutableDictionary *heightDict;
@@ -154,6 +155,8 @@
     }else{
         CommentCell *cell = [[CommentCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CommentCell class])];
         [cell configModel:self.model.comments[indexPath.row]];
+        cell.model = self.model.comments[indexPath.row];
+        cell.delegate = self;
         return cell;
     }
 }
@@ -570,6 +573,13 @@
         }
     }];
 
+}
+
+#pragma mark - CommentCellDelegate
+-(void)gotoMainPage:(CommentCell *)commentcell{
+    UserMainPageVC *usermainpagevc = [UserMainPageVC new];
+    [self.navigationController pushViewController:usermainpagevc animated:YES];
+    usermainpagevc.account = commentcell.model.account;
 }
 
 #pragma mark - 与动态列表界面交互的block

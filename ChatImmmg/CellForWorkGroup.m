@@ -67,7 +67,7 @@ const CGFloat moreBtnWidth    = 60;
     [self.contentView addSubview:self.imgvAvatar];
     
     self.labelName  = [UILabel new];
-    self.labelName.font = [UIFont systemFontOfSize:14.0f];
+    self.labelName.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0];
     self.labelName.textColor = RGB16(0x303030);
     [self.contentView addSubview:self.labelName];
     
@@ -78,6 +78,7 @@ const CGFloat moreBtnWidth    = 60;
     
     self.labelPubTime = [UILabel new];
     self.labelPubTime.font = [UIFont systemFontOfSize:13.0f];
+    self.labelPubTime.textColor = [UIColor grayColor];
     [self.contentView addSubview:self.labelPubTime];
     
     self.labelCompany = [UILabel new];
@@ -138,9 +139,10 @@ const CGFloat moreBtnWidth    = 60;
     }];
     
     [self.labelName mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(weakSelf.contentView).offset(15);
+        make.top.equalTo(weakSelf.contentView).offset(20);
         make.left.equalTo(weakSelf.imgvAvatar.mas_right).offset(10);
         make.right.equalTo(weakSelf.labelIndustry.mas_left).offset(-10);
+//        make.width.mas_equalTo(250);
     }];
     
     
@@ -154,7 +156,7 @@ const CGFloat moreBtnWidth    = 60;
     [self.labelIndustry setContentCompressionResistancePriority:749 forAxis:UILayoutConstraintAxisHorizontal];
     
     [self.labelPubTime mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(weakSelf.labelName.mas_bottom);
+        make.bottom.equalTo(weakSelf.labelName.mas_bottom).offset(-5);
         make.right.equalTo(weakSelf.contentView).offset(-15);
     }];
     [self.labelPubTime setContentHuggingPriority:251 forAxis:UILayoutConstraintAxisHorizontal];

@@ -12,6 +12,7 @@
 @property(nonatomic,strong) UILabel *name;
 @property(nonatomic,strong) UILabel *time;
 @property(nonatomic,strong) UILabel *content;
+
 @end
 
 @implementation CommentCell
@@ -37,8 +38,12 @@
 -(void)createCommentCell{
     UIImageView *headImg = [UIImageView new];
     headImg.image = [UIImage imageNamed:@"common_avatar_120px"];
+    
     [self addSubview:headImg];
     self.headImg = headImg;
+    self.headImg.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tapGuesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHeadIcon:)];
+    [self.headImg addGestureRecognizer:tapGuesture];
     [headImg mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(8);
         make.left.mas_equalTo(8);
@@ -46,6 +51,7 @@
     }];
     headImg.layer.cornerRadius = 20;
     headImg.layer.masksToBounds = YES;
+    
     
     
     
@@ -103,6 +109,17 @@
     NSString *timeStr = [matter stringFromDate:date];
     self.time.text = timeStr;
     
+}
+
+#pragma mark - Gesture
+
+- (void)tapHeadIcon:(UITapGestureRecognizer *)recognizer{
+    
+    if(recognizer.state == UIGestureRecognizerStateEnded){
+        if (_delegate && [_delegate respondsToSelector:@selector(gotoMainPage:)]) {
+            [_delegate gotoMainPage:self];
+        }
+    }
 }
 
 @end

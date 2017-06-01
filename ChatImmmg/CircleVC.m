@@ -82,7 +82,7 @@
     
     UIButton *addTimelineBtn = [UIButton new];
     addTimelineBtn.frame = CGRectMake(0, 0, 25, 25);
-    [addTimelineBtn setImage:[UIImage imageNamed:@"plus74.png"] forState:normal];
+    [addTimelineBtn setImage:[UIImage imageNamed:@"add"] forState:normal];
     [addTimelineBtn addTarget:self action:@selector(addTimeline) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *addTimelineItem = [[UIBarButtonItem alloc]initWithCustomView:addTimelineBtn];
     self.navigationItem.rightBarButtonItem = addTimelineItem;
@@ -585,8 +585,11 @@
 
 -(void)addTimeline{
     AddTimelineVC *vc = [[AddTimelineVC alloc] init];
-    vc.title = @"add";
+    vc.title = @"新动态";
     [self.navigationController pushViewController:vc animated:YES];
+    [vc addSuccess:^{
+        [self getTimelines];
+    }];
 
 }
 
@@ -691,12 +694,12 @@
                 self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
             }
    
-            if(self.dataArray){
+            if(self.dataArray.count>0){
                 self.dataArray = [NSMutableArray arrayWithArray:[self.dataArray arrayByAddingObjectsFromArray:self.newdataArray]];
             }else{
                 self.dataArray = self.newdataArray;
             }
-            if(self.dataArray){
+            if(self.dataArray.count>0){
                 lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
             }
             self.newdataArray = nil;
