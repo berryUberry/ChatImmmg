@@ -139,9 +139,10 @@ const CGFloat moreBtnWidth    = 60;
     }];
     
     [self.labelName mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(weakSelf.contentView).offset(20);
+        make.top.equalTo(weakSelf.contentView).offset(27);
         make.left.equalTo(weakSelf.imgvAvatar.mas_right).offset(10);
-        make.right.equalTo(weakSelf.labelIndustry.mas_left).offset(-10);
+//        make.right.equalTo(weakSelf.labelIndustry.mas_left).offset(-10);
+        make.right.equalTo(weakSelf.labelIndustry.mas_left).offset(150);
 //        make.width.mas_equalTo(250);
     }];
     
@@ -156,7 +157,7 @@ const CGFloat moreBtnWidth    = 60;
     [self.labelIndustry setContentCompressionResistancePriority:749 forAxis:UILayoutConstraintAxisHorizontal];
     
     [self.labelPubTime mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(weakSelf.labelName.mas_bottom).offset(-5);
+        make.bottom.equalTo(weakSelf.labelName.mas_bottom).offset(-16);
         make.right.equalTo(weakSelf.contentView).offset(-15);
     }];
     [self.labelPubTime setContentHuggingPriority:251 forAxis:UILayoutConstraintAxisHorizontal];

@@ -231,20 +231,25 @@
         return;
     }
     NSString *paramUrl = [@"?amount=" stringByAppendingString:[NSString stringWithFormat:@"%lu",(unsigned long)self.selectedImages.count]];
+    
+    WeakSelf
     [[NetworkManager shareNetwork]getImageUploadInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"getImageUploadInfo%@",responseObject);
-        if([responseObject objectForKey:@"error"]){
-            [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
+        
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
         }else{
             if([responseObject objectForKey:@"result"]){
-                self.qiNiuModels = [BerryQiNiuModel mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-                [self qiniuHttp];
+                weakSelf.qiNiuModels = [BerryQiNiuModel mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+                [weakSelf qiniuHttp];
             
             }
         }
         
     } failure:^(NSError *error) {
-        
+        [SVProgressHUD showErrorWithStatus:@"error"];
     }];
 }
 
@@ -262,21 +267,23 @@
         
         
         NSData *data = UIImageJPEGRepresentation(self.selectedImages[i],0.3);
+        
+        WeakSelf
         [upManager putData:data key:self.qiNiuModels[i].key token:token
                   complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
                       NSLog(@"qiniuinfo%@", info);
                       NSLog(@"qiniuresp%@", resp);
                       
                       if([resp objectForKey:@"key"]){
-                          if(self.imageUrls.count == 0){
-                              self.imageUrls = [NSMutableArray arrayWithObjects:[QINIU_URL stringByAppendingString:[resp objectForKey:@"key"]], nil];
+                          if(weakSelf.imageUrls.count == 0){
+                              weakSelf.imageUrls = [NSMutableArray arrayWithObjects:[QINIU_URL stringByAppendingString:[resp objectForKey:@"key"]], nil];
                           }else{
-                              [self.imageUrls addObject:[QINIU_URL stringByAppendingString:[resp objectForKey:@"key"]]];
+                              [weakSelf.imageUrls addObject:[QINIU_URL stringByAppendingString:[resp objectForKey:@"key"]]];
                           }
                       }
                       
-                      if(i == self.qiNiuModels.count - 1){
-                          [self publishHttp];
+                      if(i == weakSelf.qiNiuModels.count - 1){
+                          [weakSelf publishHttp];
                       }
                   } option:nil];
     
@@ -296,14 +303,24 @@
     NSDictionary *params = @{@"content":self.contentTextView.text,
                              @"imagesJSONString":imgs
                              };
+    
+    WeakSelf
     [[NetworkManager shareNetwork]postTimelineWithParam:params successful:^(NSDictionary *responseObject) {
+        
         NSLog(@"postTimeline%@",responseObject);
+        
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
+        
         if([responseObject objectForKey:@"success"]){
-            [self.navigationController popViewControllerAnimated:YES];
+            [weakSelf.navigationController popViewControllerAnimated:YES];
             [SVProgressHUD dismiss];
             [SVProgressHUD showSuccessWithStatus:@"发布成功！"];
-            if(self.addTimelineBlock){
-                self.addTimelineBlock();
+            if(weakSelf.addTimelineBlock){
+                weakSelf.addTimelineBlock();
             }
         }else{
             [SVProgressHUD showInfoWithStatus:@"发布失败！"];

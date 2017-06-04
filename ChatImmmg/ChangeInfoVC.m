@@ -72,8 +72,18 @@
             
             NSDictionary *param = @{@"name":self.text.text
                                     };
+            
+            WeakSelf
             [[NetworkManager shareNetwork]changeNameWithParam:param successful:^(NSDictionary *responseObject) {
                 NSLog(@"changename%@",responseObject);
+                
+                if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+                    [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+                    LoginVC *loginvc = [LoginVC new];
+                    [weakSelf presentViewController:loginvc animated:YES completion:nil];
+                }
+                
+                
                 if([responseObject objectForKey:@"error"]){
                     [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
                 }else{
@@ -82,10 +92,10 @@
                     if(result){
                         NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
                         
-                        [userDefault setObject:self.text.text forKey:@"name"];
+                        [userDefault setObject:weakSelf.text.text forKey:@"name"];
                         
                         [SVProgressHUD showSuccessWithStatus:@"修改昵称成功！"];
-                        [self.navigationController popViewControllerAnimated:YES];
+                        [weakSelf.navigationController popViewControllerAnimated:YES];
                     }
                 }
             } failure:^(NSError *error) {
@@ -94,8 +104,17 @@
         }else{
             NSDictionary *param = @{@"motto":self.text.text
                                     };
+            
+            WeakSelf
             [[NetworkManager shareNetwork]changeMottoWithParam:param successful:^(NSDictionary *responseObject) {
                 NSLog(@"changemotto%@",responseObject);
+                
+                if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+                    [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+                    LoginVC *loginvc = [LoginVC new];
+                    [weakSelf presentViewController:loginvc animated:YES completion:nil];
+                }
+                
                 if([responseObject objectForKey:@"error"]){
                     [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
                 }else{
@@ -104,10 +123,10 @@
                     if(result){
                         NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
                         
-                        [userDefault setObject:self.text.text forKey:@"motto"];
+                        [userDefault setObject:weakSelf.text.text forKey:@"motto"];
                         
                         [SVProgressHUD showSuccessWithStatus:@"修改个性签名成功！"];
-                        [self.navigationController popViewControllerAnimated:YES];
+                        [weakSelf.navigationController popViewControllerAnimated:YES];
                     }
                 }
             } failure:^(NSError *error) {

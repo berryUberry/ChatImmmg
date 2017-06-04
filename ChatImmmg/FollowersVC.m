@@ -76,16 +76,25 @@ static NSString *cellIdentifier = @"FollowersCellIdentifier";
     NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
     NSString *account = [userDefault objectForKey:@"account"];
     NSString *paramsUrl = [@"?account=" stringByAppendingString:account];
+    
+    WeakSelf
     [[NetworkManager shareNetwork]getFollowersList:nil paramsUrl:paramsUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"followeslist%@",responseObject);
+        
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
+        
         if([responseObject objectForKey:@"error"]){
             [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
         }else{
-            self.followersList = [UserInfo mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-            [self.tableView reloadData];
+            weakSelf.followersList = [UserInfo mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+            [weakSelf.tableView reloadData];
         }
     } failure:^(NSError *error) {
-        
+        [SVProgressHUD showErrorWithStatus:@"error"];
     }];
 
 }
@@ -95,11 +104,17 @@ static NSString *cellIdentifier = @"FollowersCellIdentifier";
     NSDictionary *params = @{@"account":@"b",
                              @"token":[userDefault objectForKey:@"token"]
                              };
+    
+    WeakSelf
     [[NetworkManager shareNetwork]followWithParam:params isfollow:@"follow" successful:^(NSDictionary *responseObject) {
         NSLog(@"follow%@",responseObject);
-        NSLog(@"%@",[responseObject objectForKey:@"error"]);
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
     } failure:^(NSError *error) {
-        
+        [SVProgressHUD showErrorWithStatus:@"error"];
     }];
 
 }

@@ -23,13 +23,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ChatImmmg/FollowersVC.m"
-            timestampString = "517910573.214893"
+            filePath = "ChatImmmg/TuImgVC.m"
+            timestampString = "518064073.498677"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
-            landmarkName = "-getFollowersList"
+            startingLineNumber = "512"
+            endingLineNumber = "512"
+            landmarkName = "-onTuSDKPFCamera:captureResult:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -39,13 +39,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ChatImmmg/UserMainPageVC.m"
-            timestampString = "517992271.158168"
+            filePath = "ChatImmmg/TuImgVC.m"
+            timestampString = "518064097.059506"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "435"
-            endingLineNumber = "435"
-            landmarkName = "-getOldTimeline"
+            startingLineNumber = "525"
+            endingLineNumber = "525"
+            landmarkName = "-onComponent:result:error:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

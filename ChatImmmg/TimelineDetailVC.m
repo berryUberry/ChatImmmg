@@ -423,13 +423,21 @@
         NSDictionary *params = @{@"timelineID" : self.model.dynamicId,
                              @"content" : self.commentView.textView.text
                              };
+        
+        WeakSelf
         [[NetworkManager shareNetwork]commentTimelineWithParam:params successful:^(NSDictionary *responseObject) {
             NSLog(@"commentTimeline%@",responseObject);
+            
+            if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+                [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+                LoginVC *loginvc = [LoginVC new];
+                [weakSelf presentViewController:loginvc animated:YES completion:nil];
+            }
             if([responseObject objectForKey:@"success"]){
                 [SVProgressHUD dismiss];
                 [SVProgressHUD showSuccessWithStatus:@"评论成功！"];
-                self.commentView.textView.text = @"";
-                [self getDetailTimeline];
+                weakSelf.commentView.textView.text = @"";
+                [weakSelf getDetailTimeline];
             }else{
                 [SVProgressHUD dismiss];
                 [SVProgressHUD showInfoWithStatus:@"评论失败！"];
@@ -469,6 +477,13 @@
     WeakSelf
     [[NetworkManager shareNetwork]getDetailTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"detailTimeline%@",responseObject);
+        
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
+        
         weakSelf.model = [YHWorkGroup mj_objectWithKeyValues:[responseObject objectForKey:@"result"]];
         
         
@@ -555,12 +570,19 @@
                                      };
             [[NetworkManager shareNetwork]deleteTimelineWithParam:params successful:^(NSDictionary *responseObject) {
                 NSLog(@"deleteTimeline%@",responseObject);
+                
+                if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+                    [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+                    LoginVC *loginvc = [LoginVC new];
+                    [weakSelf presentViewController:loginvc animated:YES completion:nil];
+                }
+                
                 if([responseObject objectForKey:@"success"]){
                     [SVProgressHUD showSuccessWithStatus:@"删除成功！"];
-                    if(self.deleteModelBlock){
-                        self.deleteModelBlock(weakSelf.model);
+                    if(weakSelf.deleteModelBlock){
+                        weakSelf.deleteModelBlock(weakSelf.model);
                     }
-                    [self.navigationController popViewControllerAnimated:YES];
+                    [weakSelf.navigationController popViewControllerAnimated:YES];
                 }else{
                     [SVProgressHUD showInfoWithStatus:@"删除失败！"];
                 }

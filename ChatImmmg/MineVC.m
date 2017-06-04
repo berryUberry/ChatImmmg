@@ -268,13 +268,15 @@ static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
                 }];
                 QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
                 NSData *data = UIImagePNGRepresentation(icon);
+                
+                WeakSelf
                 [upManager putData:data key:[result objectForKey:@"key"] token:token
                           complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
                               NSLog(@"qiniuinfo%@", info);
                               NSLog(@"qiniuresp%@", resp);
                               
                               if([resp objectForKey:@"key"]){
-                                  [self changeAvatarHttp:[resp objectForKey:@"key"]];
+                                  [weakSelf changeAvatarHttp:[resp objectForKey:@"key"]];
                               }
                               
                               
@@ -295,8 +297,17 @@ static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
 -(void)changeAvatarHttp:(NSString *)AvatarUrl{
     NSDictionary *params = @{@"key":AvatarUrl
                              };
+    
+    WeakSelf
     [[NetworkManager shareNetwork]changeAvatarWithParam:params successful:^(NSDictionary *responseObject) {
         NSLog(@"changeAvatar%@",responseObject);
+        
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
+        
         [SVProgressHUD dismiss];
         if([responseObject objectForKey:@"error"]){
             [SVProgressHUD showErrorWithStatus:[responseObject objectForKey:@"error"]];
@@ -305,7 +316,7 @@ static NSString *ExitCellIdentifier = @"ExitCellIdentifier";
             NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
             [userDefault setObject:[[responseObject objectForKey:@"result"] objectForKey:@"avatar"] forKey:@"avatar"];
             [SVProgressHUD showSuccessWithStatus:@"更换成功！"];
-            [self.tableView reloadData];
+            [weakSelf.tableView reloadData];
         }
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"error"];

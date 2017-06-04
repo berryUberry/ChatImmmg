@@ -22,6 +22,7 @@
 #import <RongIMKit/RongIMKit.h>
 #import "NSObject+MJKeyValue.h"
 #import <QiniuSDK.h>
+#import "LoginVC.h"
 
 #define RGB16(rgbValue)\
 \

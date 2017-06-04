@@ -507,7 +507,14 @@
                                      };
             [[NetworkManager shareNetwork]deleteTimelineWithParam:params successful:^(NSDictionary *responseObject) {
                 NSLog(@"deleteTimeline%@",responseObject);
-                if([responseObject objectForKey:@"success"]){
+                
+                if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+                    [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+                    LoginVC *loginvc = [LoginVC new];
+                    [weakSelf presentViewController:loginvc animated:YES completion:nil];
+                }
+                
+                if([responseObject objectForKey:@"success"]||[[responseObject objectForKey:@"error"] isEqual:@"未找到timeline"]){
                     [weakSelf.dataArray removeObjectAtIndex:indexPath.row];
                     [weakSelf.heightDict removeObjectForKey:dynamicId];
                     [weakSelf.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
@@ -516,6 +523,7 @@
                     [SVProgressHUD showInfoWithStatus:@"删除失败！"];
                 }
                 
+                NSLog(@"dddelte%@",[responseObject objectForKey:@"error"]);
                 
             } failure:^(NSError *error) {
                 [SVProgressHUD showInfoWithStatus:@"error"];
@@ -602,55 +610,62 @@
     }else{
         paramUrl = paramUrlpre;
     }
+    WeakSelf
     [[NetworkManager shareNetwork]getTimelinesWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
         NSLog(@"getTimelines%@",responseObject);
+
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
         
         NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
         
-        self.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-        for(int i = 0;i<self.newdataArray.count;i++){
+        weakSelf.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+        for(int i = 0;i<weakSelf.newdataArray.count;i++){
             //            self.dataArray[i].thumbnailPicUrls = self.dataArray[i].images
             
-            for(int j = 0;j<self.newdataArray[i].images.count;j++){
+            for(int j = 0;j<weakSelf.newdataArray[i].images.count;j++){
                 if(j == 0){
-                    self.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.newdataArray[i].images[j]], nil];
+                    weakSelf.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:weakSelf.newdataArray[i].images[j]], nil];
                 }else{
-                    [self.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.newdataArray[i].images[j]]];
+                    [weakSelf.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: weakSelf.newdataArray[i].images[j]]];
                 }
                 
             }
-            self.newdataArray[i].originalPicUrls = self.newdataArray[i].thumbnailPicUrls;
+            weakSelf.newdataArray[i].originalPicUrls = weakSelf.newdataArray[i].thumbnailPicUrls;
             
-            for(int q = 0;q<self.newdataArray[i].likes.count;q++){
-                self.newdataArray[i].isLike = NO;
-                if([self.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
-                    self.newdataArray[i].isLike = YES;
+            for(int q = 0;q<weakSelf.newdataArray[i].likes.count;q++){
+                weakSelf.newdataArray[i].isLike = NO;
+                if([weakSelf.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                    weakSelf.newdataArray[i].isLike = YES;
                     break;
                 }
             }
-            self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
-            self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
-            self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
+            weakSelf.newdataArray[i].likeCount = [weakSelf.newdataArray[i].liked intValue];
+            weakSelf.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)weakSelf.newdataArray[i].comments.count] intValue];
+            weakSelf.newdataArray[i].publishTime = [weakSelf configTime:weakSelf.newdataArray[i].publishDate];
         }
         
-        if(self.dataArray.count>0){
+        if(weakSelf.dataArray.count>0){
 //            self.dataArray = [NSMutableArray arrayWithObjects:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray], nil];
-            self.dataArray = [NSMutableArray arrayWithArray:[self.newdataArray arrayByAddingObjectsFromArray:self.dataArray]];
+            weakSelf.dataArray = [NSMutableArray arrayWithArray:[weakSelf.newdataArray arrayByAddingObjectsFromArray:weakSelf.dataArray]];
             
             
         }else{
-            self.dataArray = self.newdataArray;
+            weakSelf.dataArray = weakSelf.newdataArray;
             
         }
 
-        if(self.dataArray.count>0){
-            since_id = self.dataArray[0].dynamicId;
-            lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+        if(weakSelf.dataArray.count>0){
+            since_id = weakSelf.dataArray[0].dynamicId;
+            lastTimelineID = weakSelf.dataArray[weakSelf.dataArray.count - 1].dynamicId;
             
         }
-        self.newdataArray = nil;
-        [self.tableView reloadData];
-        [self.tableView loadFinish:YHRefreshType_LoadNew];
+        weakSelf.newdataArray = nil;
+        [weakSelf.tableView reloadData];
+        [weakSelf.tableView loadFinish:YHRefreshType_LoadNew];
         
     } failure:^(NSError *error) {
         
@@ -667,45 +682,51 @@
         
         NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
         
+        WeakSelf
         [[NetworkManager shareNetwork]getTimelinesWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
             NSLog(@"getoldTimeline%@",responseObject);
-            self.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
-            for(int i = 0;i<self.newdataArray.count;i++){
-                for(int j = 0;j<self.newdataArray[i].images.count;j++){
+            if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+                [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+                LoginVC *loginvc = [LoginVC new];
+                [weakSelf presentViewController:loginvc animated:YES completion:nil];
+            }
+            weakSelf.newdataArray = [YHWorkGroup mj_objectArrayWithKeyValuesArray:[responseObject objectForKey:@"result"]];
+            for(int i = 0;i<weakSelf.newdataArray.count;i++){
+                for(int j = 0;j<weakSelf.newdataArray[i].images.count;j++){
                     if(j == 0){
-                        self.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:self.newdataArray[i].images[j]], nil];
+                        weakSelf.newdataArray[i].thumbnailPicUrls = [NSMutableArray arrayWithObjects:[NSURL URLWithString:weakSelf.newdataArray[i].images[j]], nil];
                     }else{
-                        [self.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: self.newdataArray[i].images[j]]];
+                        [weakSelf.newdataArray[i].thumbnailPicUrls addObject:[NSURL URLWithString: weakSelf.newdataArray[i].images[j]]];
                     }
                     
                 }
-                self.newdataArray[i].originalPicUrls = self.newdataArray[i].thumbnailPicUrls;
+                weakSelf.newdataArray[i].originalPicUrls = weakSelf.newdataArray[i].thumbnailPicUrls;
                 
                 
-                for(int q = 0;q<self.newdataArray[i].likes.count;q++){
-                    self.newdataArray[i].isLike = NO;
-                    if([self.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
-                        self.newdataArray[i].isLike = YES;
+                for(int q = 0;q<weakSelf.newdataArray[i].likes.count;q++){
+                    weakSelf.newdataArray[i].isLike = NO;
+                    if([weakSelf.newdataArray[i].likes[q].uid isEqual:[userDefault objectForKey:@"account"]]){
+                        weakSelf.newdataArray[i].isLike = YES;
                         break;
                     }
                 }
-                self.newdataArray[i].likeCount = [self.newdataArray[i].liked intValue];
-                self.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)self.newdataArray[i].comments.count] intValue];
-                self.newdataArray[i].publishTime = [self configTime:self.newdataArray[i].publishDate];
+                weakSelf.newdataArray[i].likeCount = [weakSelf.newdataArray[i].liked intValue];
+                weakSelf.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)weakSelf.newdataArray[i].comments.count] intValue];
+                weakSelf.newdataArray[i].publishTime = [weakSelf configTime:weakSelf.newdataArray[i].publishDate];
             }
    
-            if(self.dataArray.count>0){
-                self.dataArray = [NSMutableArray arrayWithArray:[self.dataArray arrayByAddingObjectsFromArray:self.newdataArray]];
+            if(weakSelf.dataArray.count>0){
+                weakSelf.dataArray = [NSMutableArray arrayWithArray:[weakSelf.dataArray arrayByAddingObjectsFromArray:weakSelf.newdataArray]];
             }else{
-                self.dataArray = self.newdataArray;
+                weakSelf.dataArray = weakSelf.newdataArray;
             }
-            if(self.dataArray.count>0){
-                lastTimelineID = self.dataArray[self.dataArray.count - 1].dynamicId;
+            if(weakSelf.dataArray.count>0){
+                lastTimelineID = weakSelf.dataArray[weakSelf.dataArray.count - 1].dynamicId;
             }
-            self.newdataArray = nil;
+            weakSelf.newdataArray = nil;
             
-            [self.tableView loadFinish:YHRefreshType_LoadMore];
-            [self.tableView reloadData];
+            [weakSelf.tableView loadFinish:YHRefreshType_LoadMore];
+            [weakSelf.tableView reloadData];
         } failure:^(NSError *error) {
             
         }];
@@ -715,11 +736,20 @@
 -(void)thumbHttp:(CellForWorkGroup *)cell{
     NSDictionary *params = @{@"timelineID":cell.model.dynamicId
                              };
+    
+    WeakSelf
     [[NetworkManager shareNetwork]thumbUpTimelineWithParam:params successful:^(NSDictionary *responseObject) {
         NSLog(@"thumbUp%@",responseObject);
+        
+        if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
+            [SVProgressHUD showErrorWithStatus:@"登陆信息失效！请重新登录!"];
+            LoginVC *loginvc = [LoginVC new];
+            [weakSelf presentViewController:loginvc animated:YES completion:nil];
+        }
+        
         if([responseObject objectForKey:@"success"]){
-            if (cell.indexPath.row < [self.dataArray count]) {
-                YHWorkGroup *model = self.dataArray[cell.indexPath.row];
+            if (cell.indexPath.row < [weakSelf.dataArray count]) {
+                YHWorkGroup *model = weakSelf.dataArray[cell.indexPath.row];
                 
                 BOOL isLike = !model.isLike;
                 
@@ -731,7 +761,7 @@
                     model.likeCount -= 1;
                 }
                 
-                [self.tableView reloadRowsAtIndexPaths:@[cell.indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                [weakSelf.tableView reloadRowsAtIndexPaths:@[cell.indexPath] withRowAnimation:UITableViewRowAnimationNone];
             }
         }
         
