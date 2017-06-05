@@ -10,8 +10,8 @@
 #import "UserInfo.h"
 
 
-@interface ChatListVC ()
-
+@interface ChatListVC ()<RCIMUserInfoDataSource>
+@property(nonatomic,strong)UserInfo *info;
 @end
 
 @implementation ChatListVC
@@ -24,7 +24,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [[RCIM sharedRCIM] setUserInfoDataSource:self];
     //设置需要显示哪些类型的会话
     [self setDisplayConversationTypes:@[@(ConversationType_PRIVATE),
                                         @(ConversationType_DISCUSSION),
@@ -69,15 +69,23 @@
 }
 
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+-(void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion{
+//    NSString *paramUrl = [@"?account=" stringByAppendingString:userId];
+    NSDictionary *params = @{@"account" : userId
+                             };
+    RCUserInfo *user = [[RCUserInfo alloc]init];
+    WeakSelf
+    [[NetworkManager shareNetwork]getPersonalInfoWithParam:params successful:^(NSDictionary *responseObject) {
+        NSLog(@"getuserinfo%@",responseObject);
+        weakSelf.info = [UserInfo mj_objectWithKeyValues:[[responseObject objectForKey:@"result"] objectForKey:@"user"]];
+        //        [userDefault setObject:weakSelf.info forKey:account];
+        user.userId = userId;
+        user.name = weakSelf.info.name;
+        user.portraitUri = weakSelf.info.avatar;
+        return completion(user);
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"error"];
+    }];
 }
-*/
-
 
 @end

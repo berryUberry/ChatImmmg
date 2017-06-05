@@ -504,7 +504,7 @@
                 break;
             }
         }
-        weakSelf.model.likeCount = [weakSelf.model.liked intValue];
+        weakSelf.model.likeCount = (int)weakSelf.model.likes.count;
         weakSelf.model.commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)weakSelf.model.comments.count] intValue];
         weakSelf.model.publishTime = [weakSelf configTime:weakSelf.model.publishDate];
 

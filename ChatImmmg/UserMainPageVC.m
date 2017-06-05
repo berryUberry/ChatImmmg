@@ -317,15 +317,17 @@
     NSString *paramUrlprepre = [@"?account=" stringByAppendingString:self.account];
     NSString *paramUrlpre = [@"&amount=" stringByAppendingString:amount];
     NSString *paramUrl;
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:self.account,@"account",amount,@"amount", nil];
     if(since_id){
         NSString *paramUrl2 = [@"&since_id=" stringByAppendingString:since_id];
         paramUrl = [paramUrlprepre stringByAppendingString:[paramUrlpre stringByAppendingString:paramUrl2]];
+        [params setValue:since_id forKey:@"since_id"];
     }else{
         paramUrl = [paramUrlprepre stringByAppendingString: paramUrlpre];
     }
     
     WeakSelf
-    [[NetworkManager shareNetwork]getPersonalTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+    [[NetworkManager shareNetwork]getPersonalTimelineWithParam:params  successful:^(NSDictionary *responseObject) {
         NSLog(@"getPersonalTimelines%@",responseObject);
         
         if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
@@ -395,10 +397,15 @@
         NSString *paramUrl2 = [paramUrlpre stringByAppendingString:[@"&lastTimelineID=" stringByAppendingString:lastTimelineID]];
         paramUrl = [paramUrlprepre stringByAppendingString:paramUrl2];
         
+        NSDictionary *params = @{@"account":self.account,
+                                 @"amount":amount,
+                                 @"lastTimelineID":lastTimelineID
+                                 };
+        
         NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
         
         WeakSelf
-        [[NetworkManager shareNetwork]getPersonalTimelineWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+        [[NetworkManager shareNetwork]getPersonalTimelineWithParam:params successful:^(NSDictionary *responseObject) {
             NSLog(@"getPersonaloldTimeline%@",responseObject);
             
             if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){
@@ -455,10 +462,11 @@
 
 -(void)getUserinfoByUser{
     
-    NSString *paramUrl = [@"?account=" stringByAppendingString:self.account];
-    
+//    NSString *paramUrl = [@"?account=" stringByAppendingString:self.account];
+    NSDictionary *params = @{@"account":self.account
+                             };
     WeakSelf
-    [[NetworkManager shareNetwork]getPersonalInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+    [[NetworkManager shareNetwork]getPersonalInfoWithParam:params  successful:^(NSDictionary *responseObject) {
         NSLog(@"getuserinfo%@",responseObject);
         
         if([[responseObject objectForKey:@"error"] isEqual:@"token不能为空"]){

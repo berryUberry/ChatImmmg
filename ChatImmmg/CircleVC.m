@@ -643,7 +643,8 @@
                     break;
                 }
             }
-            weakSelf.newdataArray[i].likeCount = [weakSelf.newdataArray[i].liked intValue];
+//            weakSelf.newdataArray[i].likeCount = [weakSelf.newdataArray[i].liked intValue];
+            weakSelf.newdataArray[i].likeCount = (int)weakSelf.newdataArray[i].likes.count;
             weakSelf.newdataArray[i].commentCount = [[NSString stringWithFormat:@"%lu",(unsigned long)weakSelf.newdataArray[i].comments.count] intValue];
             weakSelf.newdataArray[i].publishTime = [weakSelf configTime:weakSelf.newdataArray[i].publishDate];
         }

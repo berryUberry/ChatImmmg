@@ -79,10 +79,11 @@
 }
 
 -(void)getUserInfoWithUserId:(NSString *)userId completion:(void (^)(RCUserInfo *))completion{
-    NSString *paramUrl = [@"?account=" stringByAppendingString:userId];
+    NSDictionary *params = @{@"account" : userId
+                             };
     RCUserInfo *user = [[RCUserInfo alloc]init];
     WeakSelf
-    [[NetworkManager shareNetwork]getPersonalInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
+    [[NetworkManager shareNetwork]getPersonalInfoWithParam:params successful:^(NSDictionary *responseObject) {
         NSLog(@"getuserinfo%@",responseObject);
         weakSelf.info = [UserInfo mj_objectWithKeyValues:[[responseObject objectForKey:@"result"] objectForKey:@"user"]];
         //        [userDefault setObject:weakSelf.info forKey:account];

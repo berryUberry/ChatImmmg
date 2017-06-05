@@ -215,7 +215,20 @@ static NetworkManager *shareManager = nil;
         failure(error);
     }];
 }
-
+-(void)getPersonalTimelineWithParam:(NSDictionary *)params successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_getPersonalTimeline parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+}
+-(void)getPersonalInfoWithParam:(NSDictionary *)params successful:(SuccessBlock)success failure:(FailureBlock)failure{
+    [NetworkingManager httpRequestWithType:HttpRequestTypePost WithURLString:param_getPersonInfo parameters:params success:^(NSDictionary *responseObject) {
+        success(responseObject);
+    } failure:^(NSError *error) {
+        failure(error);
+    }];
+}
 /**
  BaseHttp
  */

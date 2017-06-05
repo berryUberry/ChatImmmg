@@ -97,11 +97,9 @@ typedef void (^FailureBlock)(NSError *error);
  个人主页
  */
 -(void)getPersonalTimelineWithParam:(NSDictionary *)params
-                          paramsUrl:(NSString *)paramsUrl
                          successful:(SuccessBlock)success
                             failure:(FailureBlock)failure;
 -(void)getPersonalInfoWithParam:(NSDictionary *)params
-                      paramsUrl:(NSString *)paramsUrl
                      successful:(SuccessBlock)success
                         failure:(FailureBlock)failure;
 @end
