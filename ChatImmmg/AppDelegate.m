@@ -32,7 +32,7 @@
     
     
     // TUSDK  初始化SDK (请前往 http://tusdk.com 获取您的 APP 开发密钥)
-    [TuSDK initSdkWithAppKey:@"4a82be6c64ff76d9-00-iqztq1"];
+    [TuSDK initSdkWithAppKey:@"e407159b93f0ebd1-00-8xqmq1"];
     [TuSDK setLogLevel:lsqLogLevelDEBUG];
     
     //RongCloudIM 初始化SDK
