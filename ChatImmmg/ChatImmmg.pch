@@ -40,6 +40,7 @@ alpha:1.0]
 #define kGrayColor  RGBCOLOR(196, 197, 198)
 #define kGreenColor RGBCOLOR(0, 201, 144)
 #define RGBCOLOR(r,g,b) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:1]
+#define MainColor RGBCOLOR(96,156,134)
 #define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 #define KEYWINDOW [UIApplication sharedApplication].keyWindow

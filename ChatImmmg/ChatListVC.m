@@ -37,8 +37,8 @@
                                           @(ConversationType_GROUP)]];
     
     //设置导航栏背景颜色
-    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
-    self.navigationController.navigationBar.barTintColor = color;
+//    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
+    self.navigationController.navigationBar.barTintColor = MainColor;
     self.navigationController.navigationBar.translucent = NO;
     
     NSShadow *shadow = [[NSShadow alloc]init];

@@ -24,7 +24,7 @@
 
 -(void)configViewController{
     TuImgVC *tuimgVC = [TuImgVC new];
-    tuimgVC.title = @"P图";
+    tuimgVC.title = @"C3I4";
     tuimgVC.tabBarItem.image = [UIImage imageNamed:@"image_32x32"];
     UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:tuimgVC];
     nav.navigationBar.tintColor = [UIColor whiteColor];
@@ -61,8 +61,8 @@
     mineNav.navigationBar.tintColor = [UIColor whiteColor];
     [self addChildViewController:mineNav];
     
-    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
-    self.tabBar.tintColor = color;
+//    UIColor * color = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];
+    self.tabBar.tintColor = MainColor;
     
     
 

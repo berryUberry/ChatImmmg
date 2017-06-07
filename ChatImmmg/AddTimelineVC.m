@@ -14,6 +14,7 @@
 @interface AddTimelineVC()<HXPhotoViewDelegate>
 @property(strong,nonatomic) HXPhotoManager *manager;
 @property(nonatomic,strong) NSArray<UIImage *> *selectedImages;
+@property(nonatomic,strong) NSArray<NSData *> *selectedImagesDatas;
 @property(nonatomic,strong) NSMutableArray<BerryQiNiuModel *> *qiNiuModels;
 @property(nonatomic,strong) NSMutableArray<NSString *> *imageUrls;
 
@@ -128,6 +129,7 @@
     // 获取数组里面图片原图的 imageData 资源 传入的数组里装的是 HXPhotoModel  -- 这个方法必须写在点击上传的位置
     [HXPhotoTools fetchImageDataForSelectedPhoto:photos completion:^(NSArray<NSData *> *imageDatas) {
         NSLog(@"%ld",imageDatas.count);
+        self.selectedImagesDatas = imageDatas;
     }];
     
     //  获取数组里面图片的原图 传入的数组里装的是 HXPhotoModel  -- 这个方法必须写在点击上传的地方获取 此方法会增大内存. 获取原图图片之后请将选中数组中模型里面的数据全部清空
@@ -226,11 +228,16 @@
 
 -(void)getImageUploadInfo{
     [SVProgressHUD show];
-    if(self.selectedImages.count == 0){
+//    if(self.selectedImages.count == 0){
+//        [SVProgressHUD showInfoWithStatus:@"图片不能为空！"];
+//        return;
+//    }
+    if(self.selectedImagesDatas.count == 0){
         [SVProgressHUD showInfoWithStatus:@"图片不能为空！"];
         return;
     }
-    NSString *paramUrl = [@"?amount=" stringByAppendingString:[NSString stringWithFormat:@"%lu",(unsigned long)self.selectedImages.count]];
+//    NSString *paramUrl = [@"?amount=" stringByAppendingString:[NSString stringWithFormat:@"%lu",(unsigned long)self.selectedImages.count]];
+    NSString *paramUrl = [@"?amount=" stringByAppendingString:[NSString stringWithFormat:@"%lu",(unsigned long)self.selectedImagesDatas.count]];
     
     WeakSelf
     [[NetworkManager shareNetwork]getImageUploadInfoWithParam:nil paramsUrl:paramUrl successful:^(NSDictionary *responseObject) {
@@ -260,13 +267,15 @@
         builder.zone = httpsZone;
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+    __block int k = 0;
     for(int i = 0;i<self.qiNiuModels.count;i++){
         
         NSString *token = self.qiNiuModels[i].token;
         
         
-        
-        NSData *data = UIImageJPEGRepresentation(self.selectedImages[i],0.3);
+        UIImage *img = [UIImage imageWithData:self.selectedImagesDatas[i]];
+        NSData *data = UIImageJPEGRepresentation(img, 0.3);
+//        NSData *data = UIImageJPEGRepresentation(self.selectedImages[i],0.3);
         
         WeakSelf
         [upManager putData:data key:self.qiNiuModels[i].key token:token
@@ -282,9 +291,14 @@
                           }
                       }
                       
-                      if(i == weakSelf.qiNiuModels.count - 1){
+//                      if(i == weakSelf.qiNiuModels.count - 1){
+//                          [weakSelf publishHttp];
+//                      }
+                      if(k == weakSelf.qiNiuModels.count - 1){
                           [weakSelf publishHttp];
                       }
+                      k++;
+                      NSLog(@"kkkkk%d",k);
                   } option:nil];
     
         

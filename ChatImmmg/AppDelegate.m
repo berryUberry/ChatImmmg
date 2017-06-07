@@ -69,8 +69,8 @@
         }];
     }else{
         LoginVC *root = [LoginVC new];
-        UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:root];
-        self.window.rootViewController = nav;
+//        UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:root];
+        self.window.rootViewController = root;
     }
 
     

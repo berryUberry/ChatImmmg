@@ -9,6 +9,7 @@
 #import "FollowersVC.h"
 #import "FollowersCell.h"
 #import "UserInfo.h"
+#import "UserMainPageVC.h"
 static NSString *cellIdentifier = @"FollowersCellIdentifier";
 
 @interface FollowersVC ()<UITableViewDataSource,UITableViewDelegate>
@@ -68,6 +69,9 @@ static NSString *cellIdentifier = @"FollowersCellIdentifier";
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    UserMainPageVC *usermainpagevc = [UserMainPageVC new];
+    usermainpagevc.account = self.followersList[indexPath.row].account;
+    [self.navigationController pushViewController:usermainpagevc animated:YES];
     
 }
 

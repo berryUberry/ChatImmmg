@@ -33,7 +33,9 @@
     
     self.backgroundColor = [UIColor whiteColor];
     
-    UIImageView *headImgView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"WechatIMG2.jpeg"]];
+    UIImageView *headImgView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"icon2"]];
+    headImgView.layer.cornerRadius = 5;
+    headImgView.layer.masksToBounds = YES;
     [self addSubview:headImgView];
     [headImgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self).offset(20);
@@ -48,13 +50,13 @@
     [self addSubview:scrollView];
     [scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(headImgView);
-        make.top.equalTo(headImgView.mas_bottom).offset(20);
+        make.top.equalTo(headImgView.mas_bottom).offset(40);
         make.height.mas_equalTo(125);
     }];
     scrollView.contentSize = CGSizeMake((self.frame.size.width)*2, 85);
     
     UIButton *loginButton = [UIButton new];
-    loginButton.backgroundColor = [UIColor colorWithRed:46.0f / 255 green:139.0f / 255 blue:87.0f / 255 alpha:1];;
+    loginButton.backgroundColor = MainColor;
     loginButton.layer.cornerRadius = 5;
     [loginButton setTitle:@"登陆" forState:UIControlStateNormal];
     [self addSubview:loginButton];
